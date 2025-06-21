@@ -2,6 +2,7 @@ using AutomateDot.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers();
 builder.Services
     .AddRazorComponents()
     .AddInteractiveServerComponents();
@@ -22,4 +23,5 @@ app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
+app.MapControllers();
 app.Run();
