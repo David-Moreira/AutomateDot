@@ -2,8 +2,8 @@
 @using AutomateDot.Data
 
 <ul class="steps steps-vertical lg:steps-horizontal">
-    <li class="step step-primary">Trigger</li>
-    <li class="step">Action</li>
+    <li class=@($"step {(step == 0 ? "step-primary": "")}")>Trigger</li>
+    <li class=@($"step {(step == 1 ? "step-primary" : "")}")>Action</li>
 </ul>
 
 
@@ -12,50 +12,59 @@
 
     <EditText @bind-Value="Input.Name" Caption="Name" />
 
-    <EditSelect @bind-Value="Input.TriggerType" Caption="Trigger">
-        @foreach (var item in Enum.GetValues<TriggerType>())
-        {
-            <option value="@item">@item.ToFriendlyString()</option>
-        }
-    </EditSelect>
-
-    @if (Input.TriggerType == TriggerType.GitHubWebhook)
+    @if (step == 0)
     {
-        <EditSelect @bind-Value="Input.GitHubWebhookTriggerConfiguration!.TriggerEvent" Caption="Event">
-            @foreach (var item in Enum.GetValues<GitHubWebhookTriggerEvent>())
+        <EditSelect @bind-Value="Input.TriggerType" Caption="Trigger">
+            @foreach (var item in Enum.GetValues<TriggerType>())
             {
                 <option value="@item">@item.ToFriendlyString()</option>
             }
         </EditSelect>
-        <Info>
-            Please configure your github webhook to: @NavigationManager.ToAbsoluteUri("api/webhook/github")
-        </Info>
-    }
 
-    <EditSelect @bind-Value="Input.ActionType" Caption="Action">
-        @foreach (var item in Enum.GetValues<ActionType>())
+        @if (Input.TriggerType == TriggerType.GitHubWebhook)
         {
-            <option value="@item">@item.ToFriendlyString()</option>
+            <EditSelect @bind-Value="Input.GitHubWebhookTriggerConfiguration!.TriggerEvent" Caption="Event">
+                @foreach (var item in Enum.GetValues<GitHubWebhookTriggerEvent>())
+                {
+                    <option value="@item">@item.ToFriendlyString()</option>
+                }
+            </EditSelect>
+            <Info>
+                Please configure your github webhook to: @NavigationManager.ToAbsoluteUri("api/webhook/github")
+            </Info>
         }
-    </EditSelect>
 
-    @if (Input.ActionType == ActionType.SendWebhook)
-    {
-        <EditText @bind-Value="Input.SendWebhookConfiguration!.Url" Caption="Url" />
-        <EditText @bind-Value="Input.SendWebhookConfiguration!.Message" Caption="Message" />
     }
-    else if (Input.ActionType == ActionType.Gotify)
+    else if (step == 1)
     {
-        <EditText @bind-Value="Input.GotifyConfiguration!.Url" Caption="Url" />
-        <EditText @bind-Value="Input.GotifyConfiguration!.Title" Caption="Title" />
-        <EditText @bind-Value="Input.GotifyConfiguration!.Message" Caption="Message" />
-        <EditNumber @bind-Value="Input.GotifyConfiguration!.Priority" Caption="Priority" />
+        <EditSelect @bind-Value="Input.ActionType" Caption="Action">
+            @foreach (var item in Enum.GetValues<ActionType>())
+            {
+                <option value="@item">@item.ToFriendlyString()</option>
+            }
+        </EditSelect>
+        @if (Input.ActionType == ActionType.SendWebhook)
+        {
+            <EditText @bind-Value="Input.SendWebhookConfiguration!.Url" Caption="Url" />
+            <EditText @bind-Value="Input.SendWebhookConfiguration!.Message" Caption="Message" />
+        }
+        else if (Input.ActionType == ActionType.Gotify)
+        {
+            <EditText @bind-Value="Input.GotifyConfiguration!.Url" Caption="Url" />
+            <EditText @bind-Value="Input.GotifyConfiguration!.Title" Caption="Title" />
+            <EditText @bind-Value="Input.GotifyConfiguration!.Message" Caption="Message" />
+            <EditNumber @bind-Value="Input.GotifyConfiguration!.Priority" Caption="Priority" />
+        }
     }
 
     <AlertError Message="@_error" />
 
     <div class="float-right">
-        <input type="submit" class="btn btn-primary" value="Create" />
+        @if(step > 0)
+        {
+            <input type="button" class="btn btn-secondary" value="Back" onclick="@(() => step--)" />
+        }
+        <input type="submit" class="btn btn-primary" value="@(step == 0 ? "Next" : "Create")" />
     </div>
 
 </EditForm>
@@ -66,6 +75,7 @@
     [Inject] public NavigationManager NavigationManager { get; set; } = default!;
     public AutomationRecipeDto Input { get; set; } = new();
 
+    private int step = 0;
     private string _error = string.Empty;
 
     private async Task OnValidSubmitAsync()
@@ -73,6 +83,14 @@
         try
         {
             _error = string.Empty;
+
+            if (step == 0)
+            {
+                step++;
+                StateHasChanged();
+                return;
+            }
+
             var newRecipe = new AutomationRecipe()
             {
                 Name = Input.Name,

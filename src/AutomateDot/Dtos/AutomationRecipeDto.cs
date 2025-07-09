@@ -38,11 +38,11 @@ public class AutomationRecipeDto
             GotifyConfiguration = null;
             switch (value)
             {
-                case ActionType.SendWebhook:
+                case Data.Enums.ActionType.SendWebhook:
                     SendWebhookConfiguration = new();
                     break;
 
-                case ActionType.Gotify:
+                case Data.Enums.ActionType.Gotify:
                     GotifyConfiguration = new();
                     break;
             }
@@ -75,10 +75,10 @@ public class AutomationRecipeDto
     {
         switch (ActionType)
         {
-            case ActionType.SendWebhook:
+            case Data.Enums.ActionType.SendWebhook:
                 return System.Text.Json.JsonSerializer.Serialize(SendWebhookConfiguration);
 
-            case ActionType.Gotify:
+            case Data.Enums.ActionType.Gotify:
                 return System.Text.Json.JsonSerializer.Serialize(GotifyConfiguration);
 
             default:
