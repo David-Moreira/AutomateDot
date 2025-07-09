@@ -1,0 +1,49 @@
+﻿<div class="card bg-base-100 w-full md:shadow-xl md:rounded-md rounded-none">
+    <div class="card-body p-4">
+        <div class="">
+
+            <h1 class="card-title">
+                General Error
+            </h1>
+            <span class="leading-none"></span>
+            <div class="divider" />
+        </div>
+
+        <div class="">
+            We were unable to handle your request.
+        </div>
+        <div class="font-large">
+            Please try again and if the problem persists please contact AutomateDot Support.
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(TraceId))
+        {
+            <p class="font-bold text-center">
+                <label>Id: </label> <span>@TraceId</span>
+            </p>
+        }
+
+        <button type="button" class="btn w-full" @onclick="@Home">Back to Dashboard</button>
+        <button type="button" class="btn btn-primary w-full" @onclick="@Refresh">Reload Page</button>
+
+    </div>
+</div>
+
+
+@code {
+    [Inject] public NavigationManager NavigationManager { get; set; } = default!;
+
+    /// <summary>
+    /// A TraceId that allows to obtain detailed information about what the user was doing up until this point.
+    /// </summary>
+    [Parameter] public string TraceId { get; set; } = string.Empty;
+
+    protected override bool ShouldRender()
+         => false;
+
+    private void Refresh()
+       => NavigationManager.NavigateTo(NavigationManager.Uri, true);
+
+    private void Home()
+        => NavigationManager.NavigateTo("/", true);
+}

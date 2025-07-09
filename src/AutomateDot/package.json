@@ -1,0 +1,11 @@
+{
+  "name": "automatedot",
+  "private": true,
+  "scripts": {
+    "css:build": "npx @tailwindcss/cli -i ./wwwroot/css/tailwind.css -o ./wwwroot/css/tailwind-final.css --minify"
+  },
+  "devDependencies": {
+    "daisyui": "^5.0.43",
+    "tailwindcss": "^4.1.8"
+  }
+}

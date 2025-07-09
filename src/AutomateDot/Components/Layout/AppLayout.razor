@@ -1,0 +1,29 @@
+﻿@using AutomateDot.Components.Error
+@inherits LayoutComponentBase
+
+<div class="app min-h-screen bg-base-200/50">
+
+    <ErrorBoundary>
+        <ChildContent>
+
+            <AppTopNav />
+
+            <main class="md:max-w-5xl mx-auto md:py-4">
+                @Body
+            </main>
+
+            <AppBottomNav />
+
+        </ChildContent>
+        <ErrorContent>
+            <Error />
+        </ErrorContent>
+    </ErrorBoundary>
+
+</div>
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a title="Reload" href="" class="reload">Reload</a>
+    <button class="dismiss">🗙</button>
+</div>
