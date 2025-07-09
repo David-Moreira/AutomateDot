@@ -1,7 +1,98 @@
 ﻿@page "/"
+@using AutomateDot.Data
 
-<PageTitle>Home</PageTitle>
+<ul class="steps steps-vertical lg:steps-horizontal">
+    <li class="step step-primary">Trigger</li>
+    <li class="step">Action</li>
+</ul>
 
-<h1>Hello, world!</h1>
 
-Welcome to your new app.
+<EditForm Model="Input" OnValidSubmit="OnValidSubmitAsync" name="recipe" method="post" class="space-y-2">
+    <ObjectGraphDataAnnotationsValidator />
+
+    <EditText @bind-Value="Input.Name" Caption="Name" />
+
+    <EditSelect @bind-Value="Input.TriggerType" Caption="Trigger">
+        @foreach (var item in Enum.GetValues<TriggerType>())
+        {
+            <option value="@item">@item.ToFriendlyString()</option>
+        }
+    </EditSelect>
+
+    @if (Input.TriggerType == TriggerType.GitHubWebhook)
+    {
+        <EditSelect @bind-Value="Input.GitHubWebhookTriggerConfiguration!.TriggerEvent" Caption="Event">
+            @foreach (var item in Enum.GetValues<GitHubWebhookTriggerEvent>())
+            {
+                <option value="@item">@item.ToFriendlyString()</option>
+            }
+        </EditSelect>
+        <Info>
+            Please configure your github webhook to: @NavigationManager.ToAbsoluteUri("api/webhook/github")
+        </Info>
+    }
+
+    <EditSelect @bind-Value="Input.ActionType" Caption="Action">
+        @foreach (var item in Enum.GetValues<ActionType>())
+        {
+            <option value="@item">@item.ToFriendlyString()</option>
+        }
+    </EditSelect>
+
+    @if (Input.ActionType == ActionType.SendWebhook)
+    {
+        <EditText @bind-Value="Input.SendWebhookConfiguration!.Url" Caption="Url" />
+        <EditText @bind-Value="Input.SendWebhookConfiguration!.Message" Caption="Message" />
+    }
+    else if (Input.ActionType == ActionType.Gotify)
+    {
+        <EditText @bind-Value="Input.GotifyConfiguration!.Url" Caption="Url" />
+        <EditText @bind-Value="Input.GotifyConfiguration!.Title" Caption="Title" />
+        <EditText @bind-Value="Input.GotifyConfiguration!.Message" Caption="Message" />
+        <EditNumber @bind-Value="Input.GotifyConfiguration!.Priority" Caption="Priority" />
+    }
+
+    <AlertError Message="@_error" />
+
+    <div class="float-right">
+        <input type="submit" class="btn btn-primary" value="Create" />
+    </div>
+
+</EditForm>
+
+@code {
+    [Inject] public ILogger<Home> Logger { get; set; } = default!;
+    [Inject] public ApplicationDbContext ApplicationDbContext { get; set; } = default!;
+    [Inject] public NavigationManager NavigationManager { get; set; } = default!;
+    public AutomationRecipeDto Input { get; set; } = new();
+
+    private string _error = string.Empty;
+
+    private async Task OnValidSubmitAsync()
+    {
+        try
+        {
+            _error = string.Empty;
+            var newRecipe = new AutomationRecipe()
+            {
+                Name = Input.Name,
+                TriggerType = Input.TriggerType,
+                TriggerConfiguration = Input.GetTriggerConfiguration(),
+                ActionType = Input.ActionType,
+                ActionConfiguration = Input.GetActionConfiguration()
+            };
+
+            await ApplicationDbContext.AddAsync(newRecipe);
+            await ApplicationDbContext.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Unhandled exception when saving data");
+            _error = Errors.UNHANDLED_EXCEPTION_NOTIFY_SUPPORT;
+        }
+        finally
+        {
+        }
+    }
+
+}

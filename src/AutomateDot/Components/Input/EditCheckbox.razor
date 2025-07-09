@@ -1,0 +1,35 @@
+﻿@using System.Linq.Expressions
+
+<fieldset class="fieldset">
+    <label class="label cursor-pointer">
+
+        <InputCheckbox Value="Value" ValueChanged="ValueChanged" ValueExpression="ValueExpression" class="checkbox" @attributes="AdditionalAttributes" />
+        @if ( EditContext is not null && ValueExpression is not null )
+        {
+            <ValidationMessage For="@ValueExpression" />
+        }
+        @if (!string.IsNullOrEmpty(Caption))
+        {
+            <span class="fieldset-legend">@Caption</span>
+        }
+    </label>
+</fieldset>
+
+@code {
+    [CascadingParameter] public EditContext? EditContext { get; set; }
+    [Parameter] public string Caption { get; set; } = string.Empty;
+    [Parameter] public bool Value { get; set; }
+    [Parameter] public EventCallback<bool> ValueChanged { get; set; }
+    [Parameter] public Expression<Func<bool>>? ValueExpression { get; set; }
+
+    [Parameter( CaptureUnmatchedValues = true )] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if ( ValueExpression is null )
+        {
+            ValueExpression = () => Value;
+        }
+        base.OnInitialized();
+    }
+}
