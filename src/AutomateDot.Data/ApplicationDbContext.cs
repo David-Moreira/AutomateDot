@@ -15,6 +15,8 @@ public class ApplicationDbContext : DbContext
     }
 
     public DbSet<AutomationRecipe> AutomationRecipes { get; set; }
+    public DbSet<AutomationExecution> AutomationExecutions { get; set; }
+    public DbSet<AutomationExecutionEntry> AutomationExecutionEntries { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
