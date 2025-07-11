@@ -16,37 +16,52 @@ public static class GitHubWebhookTrigger
             {
                 case Data.Enums.GitHubWebhookTriggerEvent.CreateBranch:
                     var createEventPayload = await request.ReadFromJsonAsync<GithubCreateEventPayload>();
-                    return createEventPayload?.RefType == "branch";
+
+                    return createEventPayload is not null &&
+                    string.Equals(createEventPayload.Repository.Name, configuration.Repository, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(createEventPayload.RefType, "branch", StringComparison.OrdinalIgnoreCase);
 
                 case Data.Enums.GitHubWebhookTriggerEvent.DeleteBranch:
                     var deleteEventPayload = await request.ReadFromJsonAsync<GithubDeleteEventPayload>();
-                    return deleteEventPayload?.RefType == "branch";
+                    return deleteEventPayload is not null &&
+                    string.Equals(deleteEventPayload.Repository.Name, configuration.Repository, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(deleteEventPayload?.RefType, "branch", StringComparison.OrdinalIgnoreCase);
 
                 case Data.Enums.GitHubWebhookTriggerEvent.CreateTag:
                     var createTagEventPayload = await request.ReadFromJsonAsync<GithubCreateEventPayload>();
-                    return createTagEventPayload?.RefType == "tag";
+                    return createTagEventPayload is not null &&
+                    string.Equals(createTagEventPayload.Repository.Name, configuration.Repository, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(createTagEventPayload?.RefType, "tag", StringComparison.OrdinalIgnoreCase);
 
                 case Data.Enums.GitHubWebhookTriggerEvent.DeleteTag:
                     var deleteTagEventPayload = await request.ReadFromJsonAsync<GithubDeleteEventPayload>();
-                    return deleteTagEventPayload?.RefType == "tag";
+                    return deleteTagEventPayload is not null &&
+                    string.Equals(deleteTagEventPayload.Repository.Name, configuration.Repository, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(deleteTagEventPayload?.RefType, "tag", StringComparison.OrdinalIgnoreCase);
 
                 case Data.Enums.GitHubWebhookTriggerEvent.Released:
                     var releaseEventPayload = await request.ReadFromJsonAsync<GithubReleaseEventPayload>();
-                    return releaseEventPayload?.Action == "released";
+                    return releaseEventPayload is not null &&
+                    string.Equals(releaseEventPayload.Repository.Name, configuration.Repository, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(releaseEventPayload?.Action, "released", StringComparison.OrdinalIgnoreCase);
 
                 case Data.Enums.GitHubWebhookTriggerEvent.NewIssue:
                     var issuesEventPayload = await request.ReadFromJsonAsync<GithubIssuesEventPayload>();
-                    return issuesEventPayload?.Action == "opened";
+                    return issuesEventPayload is not null &&
+                    string.Equals(issuesEventPayload.Repository.Name, configuration.Repository, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(issuesEventPayload?.Action, "opened", StringComparison.OrdinalIgnoreCase);
 
                 case Data.Enums.GitHubWebhookTriggerEvent.NewPullRequest:
                     var pullRequestEventPayload = await request.ReadFromJsonAsync<GithubPullRequestEventPayload>();
-                    return pullRequestEventPayload?.Action == "opened";
+                    return pullRequestEventPayload is not null &&
+                    string.Equals(pullRequestEventPayload.Repository.Name, configuration.Repository, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(pullRequestEventPayload?.Action, "opened", StringComparison.OrdinalIgnoreCase);
 
                 default:
                     break;
             }
         }
 
-        return isEvent;
+        return false;
     }
 }

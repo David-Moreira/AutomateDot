@@ -41,6 +41,7 @@
 
                 @if (TriggerInput.TriggerType == TriggerType.GitHubWebhook)
                 {
+                    <EditText @bind-Value=@TriggerInput.GitHubWebhookTriggerConfiguration!.Repository Caption="Repository" />
                     <EditSelect @bind-Value="TriggerInput.GitHubWebhookTriggerConfiguration!.TriggerEvent" Caption="Event">
                         @foreach (var item in Enum.GetValues<GitHubWebhookTriggerEvent>())
                         {

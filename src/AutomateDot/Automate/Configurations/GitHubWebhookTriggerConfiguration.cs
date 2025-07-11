@@ -1,9 +1,14 @@
 ﻿using AutomateDot.Data.Enums;
 
+using System.ComponentModel.DataAnnotations;
+
 namespace AutomateDot.Configurations;
 
 public sealed class GitHubWebhookTriggerConfiguration()
 {
+    [Required]
+    public string Repository { get; set; } = string.Empty;
+
     public string GithubTriggerEvent
         => TriggerEvent switch
         {
