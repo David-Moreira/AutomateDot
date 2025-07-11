@@ -2,48 +2,98 @@ using AutomateDot.Actions;
 using AutomateDot.Components;
 using AutomateDot.Data;
 
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 
-var builder = WebApplication.CreateBuilder(args);
+using Serilog;
+using Serilog.Events;
 
-builder.Services.AddControllers();
-builder.Services
-    .AddRazorComponents()
-    .AddInteractiveServerComponents();
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .Enrich.FromLogContext()
+#if DEBUG
+    .WriteTo.Console()
+#endif
+    .CreateBootstrapLogger();
 
-//For now we'll be using dbContext directly in the pages to develop faster. Ideally we would encapsulate it in a repository/service.
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+try
 {
-    options.UseSqlite($"DataSource=automatedot.db");
-});
+    var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddHttpClient();
-builder.Services.AddScoped<ActionsService>();
-builder.Services.AddScoped<SendWebhookAction>();
-builder.Services.AddScoped<GotifyAction>();
+    Addlogging(builder);
 
-var app = builder.Build();
+    builder.Services.AddControllers();
+    builder.Services
+        .AddRazorComponents()
+        .AddInteractiveServerComponents();
 
-if (!app.Environment.IsDevelopment())
+    builder.Services.AddResponseCompression(options =>
+    {
+        options.EnableForHttps = true;
+        options.Providers.Add<BrotliCompressionProvider>();
+        options.Providers.Add<GzipCompressionProvider>();
+    });
+
+    //For now we'll be using dbContext directly in the pages to develop faster. Ideally we would encapsulate it in a repository/service.
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    {
+        options.UseSqlite($"DataSource={builder.Configuration.GetConnectionString("SqlLite")}");
+    });
+
+    builder.Services.AddHttpClient();
+    builder.Services.AddScoped<ActionsService>();
+    builder.Services.AddScoped<SendWebhookAction>();
+    builder.Services.AddScoped<GotifyAction>();
+
+    var app = builder.Build();
+
+    if (!app.Environment.IsDevelopment())
+    {
+        app.UseExceptionHandler("/Error", createScopeForErrors: true);
+        app.UseHsts();
+    }
+
+    app.UseHttpsRedirection();
+
+    app.UseAntiforgery();
+
+    app.MapStaticAssets();
+    app.MapRazorComponents<App>()
+        .AddInteractiveServerRenderMode();
+
+    app.MapControllers();
+
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        await dbContext.Database.MigrateAsync();
+    }
+
+    app.Run();
+}
+finally
 {
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    app.UseHsts();
+    Log.Warning("Shutting down application and flushing logger...");
+    Log.CloseAndFlush();
 }
 
-app.UseHttpsRedirection();
-
-app.UseAntiforgery();
-
-app.MapStaticAssets();
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
-
-app.MapControllers();
-
-using (var scope = app.Services.CreateScope())
+void Addlogging(WebApplicationBuilder builder)
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    await dbContext.Database.MigrateAsync();
-}
+    builder.Services.AddLogging(options =>
+    {
+        options.ClearProviders();
+        options.AddSerilog();
+    });
 
-app.Run();
+    var logBuilder = new LoggerConfiguration()
+        .MinimumLevel.Information()
+        .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+        .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Information)
+        .ReadFrom.Configuration(builder.Configuration)
+        .Enrich.FromLogContext();
+#if DEBUG
+    logBuilder.WriteTo.Console();
+#endif
+
+    Log.Logger = logBuilder.CreateLogger();
+}
