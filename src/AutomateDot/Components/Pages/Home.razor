@@ -1,82 +1,133 @@
 ﻿@page "/"
 @using AutomateDot.Data
 
-<ul class="steps steps-vertical lg:steps-horizontal">
-    <li class=@($"step {(step == 0 ? "step-primary": "")}")>Trigger</li>
-    <li class=@($"step {(step == 1 ? "step-primary" : "")}")>Action</li>
-</ul>
-
-
-<EditForm Model="Input" OnValidSubmit="OnValidSubmitAsync" name="recipe" method="post" class="space-y-2">
-    <ObjectGraphDataAnnotationsValidator />
-
-    <EditText @bind-Value="Input.Name" Caption="Name" />
-
-    @if (step == 0)
-    {
-        <EditSelect @bind-Value="Input.TriggerType" Caption="Trigger">
-            @foreach (var item in Enum.GetValues<TriggerType>())
-            {
-                <option value="@item">@item.ToFriendlyString()</option>
-            }
-        </EditSelect>
-
-        @if (Input.TriggerType == TriggerType.GitHubWebhook)
+<PageContainer>
+    <TitleContent>
+        <div class="flex items-center justify-center w-full">
+            <ul class="steps steps-vertical md:steps-horizontal md:w-full ">
+            <li class=@($"step {(step == 0 ? "step-primary" : "")}")>Definition</li>
+            <li class=@($"step {(step == 1 ? "step-primary" : "")}")>Trigger</li>
+            <li class=@($"step {(step == 2 ? "step-primary" : "")}")>Action</li>
+        </ul>
+        </div>
+    </TitleContent>
+    <ChildContent>
+        @if (step == 0)
         {
-            <EditSelect @bind-Value="Input.GitHubWebhookTriggerConfiguration!.TriggerEvent" Caption="Event">
-                @foreach (var item in Enum.GetValues<GitHubWebhookTriggerEvent>())
+            <EditForm Model="DefinitionInput" OnValidSubmit="Next" method="post" class="space-y-2">
+                <ObjectGraphDataAnnotationsValidator />
+
+                <EditText @bind-Value=@DefinitionInput.Name Caption="Name" />
+
+                <AlertError Message="@_error" />
+
+                <div class="float-right">
+                    <input type="submit" class="btn btn-primary" value="Next" />
+                </div>
+
+            </EditForm>
+        }
+        else if (step == 1)
+        {
+            <EditForm Model="TriggerInput" OnValidSubmit="Next" method="post" class="space-y-2">
+                <ObjectGraphDataAnnotationsValidator />
+
+                <EditSelect @bind-Value="TriggerInput.TriggerType" Caption="Trigger">
+                    @foreach (var item in Enum.GetValues<TriggerType>())
+                    {
+                        <option value="@item">@item.ToFriendlyString()</option>
+                    }
+                </EditSelect>
+
+                @if (TriggerInput.TriggerType == TriggerType.GitHubWebhook)
                 {
-                    <option value="@item">@item.ToFriendlyString()</option>
+                    <EditSelect @bind-Value="TriggerInput.GitHubWebhookTriggerConfiguration!.TriggerEvent" Caption="Event">
+                        @foreach (var item in Enum.GetValues<GitHubWebhookTriggerEvent>())
+                        {
+                            <option value="@item">@item.ToFriendlyString()</option>
+                        }
+                    </EditSelect>
+                    <Info>
+                        Please configure your github webhook to: @NavigationManager.ToAbsoluteUri("api/webhook/github")
+                    </Info>
                 }
-            </EditSelect>
-            <Info>
-                Please configure your github webhook to: @NavigationManager.ToAbsoluteUri("api/webhook/github")
-            </Info>
-        }
 
-    }
-    else if (step == 1)
-    {
-        <EditSelect @bind-Value="Input.ActionType" Caption="Action">
-            @foreach (var item in Enum.GetValues<ActionType>())
-            {
-                <option value="@item">@item.ToFriendlyString()</option>
-            }
-        </EditSelect>
-        @if (Input.ActionType == ActionType.SendWebhook)
+                <AlertError Message="@_error" />
+
+                <div class="float-right">
+                    <input type="button" class="btn btn-secondary" value="Back" onclick="@Back" />
+                    <input type="submit" class="btn btn-primary" value="Next" />
+                </div>
+
+            </EditForm>
+        }
+        else if (step == 2)
         {
-            <EditText @bind-Value="Input.SendWebhookConfiguration!.Url" Caption="Url" />
-            <EditText @bind-Value="Input.SendWebhookConfiguration!.Message" Caption="Message" />
+            <EditForm Model="ActionInput" OnValidSubmit="OnValidSubmitAsync" method="post" class="space-y-2">
+                <ObjectGraphDataAnnotationsValidator />
+
+                <EditSelect @bind-Value="ActionInput.ActionType" Caption="Action">
+                    @foreach (var item in Enum.GetValues<ActionType>())
+                    {
+                        <option value="@item">@item.ToFriendlyString()</option>
+                    }
+                </EditSelect>
+                @if (ActionInput.ActionType == ActionType.SendWebhook)
+                {
+                    <EditText @bind-Value="ActionInput.SendWebhookConfiguration!.Url" Caption="Url" />
+                    <EditText @bind-Value="ActionInput.SendWebhookConfiguration!.Message" Caption="Message" />
+                }
+                else if (ActionInput.ActionType == ActionType.Gotify)
+                {
+                    <EditText @bind-Value="ActionInput.GotifyConfiguration!.Url" Caption="Url" />
+                    <EditText @bind-Value="ActionInput.GotifyConfiguration!.Title" Caption="Title" />
+                    <EditText @bind-Value="ActionInput.GotifyConfiguration!.Message" Caption="Message" />
+                    <EditNumber @bind-Value="ActionInput.GotifyConfiguration!.Priority" Caption="Priority" />
+                }
+
+                <AlertError Message="@_error" />
+
+                <div class="float-right">
+                    <input type="button" class="btn btn-secondary" value="Back" onclick="@Back" />
+                    <input type="submit" class="btn btn-primary" value="Create" />
+                </div>
+
+            </EditForm>
         }
-        else if (Input.ActionType == ActionType.Gotify)
-        {
-            <EditText @bind-Value="Input.GotifyConfiguration!.Url" Caption="Url" />
-            <EditText @bind-Value="Input.GotifyConfiguration!.Title" Caption="Title" />
-            <EditText @bind-Value="Input.GotifyConfiguration!.Message" Caption="Message" />
-            <EditNumber @bind-Value="Input.GotifyConfiguration!.Priority" Caption="Priority" />
-        }
-    }
-
-    <AlertError Message="@_error" />
-
-    <div class="float-right">
-        @if(step > 0)
-        {
-            <input type="button" class="btn btn-secondary" value="Back" onclick="@(() => step--)" />
-        }
-        <input type="submit" class="btn btn-primary" value="@(step == 0 ? "Next" : "Create")" />
-    </div>
-
-</EditForm>
-
+    </ChildContent>
+</PageContainer>
 @code {
     [Inject] public ILogger<Home> Logger { get; set; } = default!;
     [Inject] public ApplicationDbContext ApplicationDbContext { get; set; } = default!;
     [Inject] public NavigationManager NavigationManager { get; set; } = default!;
-    public AutomationRecipeDto Input { get; set; } = new();
+    public AutomationRecipeDefinitionDto DefinitionInput { get; set; } = new();
+    public AutomationRecipeTriggerDto TriggerInput { get; set; } = new();
+    public AutomationRecipeActionDto ActionInput { get; set; } = new();
 
     private int step = 0;
     private string _error = string.Empty;
+
+    private Task Back()
+    {
+        if (step <= 0)
+        {
+            return Task.CompletedTask;
+        }
+        step--;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task Next()
+    {
+        if (step >= 2)
+        {
+            return Task.CompletedTask;
+        }
+        step++;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
 
     private async Task OnValidSubmitAsync()
     {
@@ -93,11 +144,11 @@
 
             var newRecipe = new AutomationRecipe()
             {
-                Name = Input.Name,
-                TriggerType = Input.TriggerType,
-                TriggerConfiguration = Input.GetTriggerConfiguration(),
-                ActionType = Input.ActionType,
-                ActionConfiguration = Input.GetActionConfiguration()
+                Name = DefinitionInput.Name,
+                TriggerType = TriggerInput.TriggerType,
+                TriggerConfiguration = TriggerInput.GetTriggerConfiguration(),
+                ActionType = ActionInput.ActionType,
+                ActionConfiguration = ActionInput.GetActionConfiguration()
             };
 
             await ApplicationDbContext.AddAsync(newRecipe);

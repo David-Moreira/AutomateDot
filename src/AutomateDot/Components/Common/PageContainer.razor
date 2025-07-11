@@ -1,0 +1,28 @@
+﻿<div class="card bg-base-100 w-full md:shadow-xl md:rounded-md rounded-none">
+    <div class="card-body p-4">
+        <div class="">
+
+            <h1 class="card-title">
+                @TitleContent
+                @Title
+            </h1>
+            @if ( !string.IsNullOrWhiteSpace( Subtitle ) )
+            {
+
+                <span class="leading-none">@Subtitle</span>
+            }
+            <div class="divider" />
+        </div>
+
+
+        @ChildContent
+
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public RenderFragment? TitleContent { get; set; } 
+    [Parameter] public string Subtitle { get; set; } = string.Empty;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}
