@@ -82,6 +82,7 @@ public class AutomationRecipeActionDto
         {
             SendWebhookConfiguration = null;
             GotifyConfiguration = null;
+            ScriptConfiguration = null;
             switch (value)
             {
                 case Data.Enums.ActionType.SendWebhook:
@@ -90,6 +91,10 @@ public class AutomationRecipeActionDto
 
                 case Data.Enums.ActionType.Gotify:
                     GotifyConfiguration = new();
+                    break;
+
+                case Data.Enums.ActionType.Script:
+                    ScriptConfiguration = new();
                     break;
             }
             _actionType = value;
@@ -101,6 +106,9 @@ public class AutomationRecipeActionDto
 
     [ValidateComplexType]
     public GotifyConfiguration? GotifyConfiguration { get; set; }
+
+    [ValidateComplexType]
+    public ScriptConfiguration? ScriptConfiguration { get; set; }
 
     public string GetActionConfiguration()
     {
@@ -128,6 +136,10 @@ public class AutomationRecipeActionDto
 
             case Data.Enums.ActionType.Gotify:
                 GotifyConfiguration = System.Text.Json.JsonSerializer.Deserialize<GotifyConfiguration>(automationRecipe.ActionConfiguration);
+                break;
+
+            case Data.Enums.ActionType.Script:
+                ScriptConfiguration = System.Text.Json.JsonSerializer.Deserialize<ScriptConfiguration>(automationRecipe.ActionConfiguration);
                 break;
 
             default:

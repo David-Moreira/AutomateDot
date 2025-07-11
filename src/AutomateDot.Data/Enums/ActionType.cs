@@ -3,7 +3,8 @@
 public enum ActionType
 {
     SendWebhook,
-    Gotify
+    Gotify,
+    Script
 }
 
 public static class ActionTypeExtensions
@@ -14,6 +15,7 @@ public static class ActionTypeExtensions
         {
             ActionType.SendWebhook => "Send Webhook",
             ActionType.Gotify => "Gotify",
+            ActionType.Script => "Script",
             _ => throw new ArgumentOutOfRangeException(nameof(type))
         };
     }

@@ -3,7 +3,7 @@ using AutomateDot.Data.Enums;
 
 namespace AutomateDot.Actions;
 
-public class ActionsService(SendWebhookAction SendWebhookAction, GotifyAction GotifyAction)
+public class ActionsService(SendWebhookAction SendWebhookAction, GotifyAction GotifyAction, ScriptAction ScriptAction)
 {
     public async Task Execute(ActionType actionType, string configuration)
     {
@@ -19,6 +19,12 @@ public class ActionsService(SendWebhookAction SendWebhookAction, GotifyAction Go
                 {
                     var config = System.Text.Json.JsonSerializer.Deserialize<GotifyConfiguration>(configuration);
                     await GotifyAction.ExecuteAsync(config!);
+                    break;
+                }
+            case ActionType.Script:
+                {
+                    var config = System.Text.Json.JsonSerializer.Deserialize<ScriptConfiguration>(configuration);
+                    await ScriptAction.ExecuteAsync(config!);
                     break;
                 }
             default:
