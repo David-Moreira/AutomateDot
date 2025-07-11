@@ -51,6 +51,19 @@
                         Please configure your github webhook to: @NavigationManager.ToAbsoluteUri("api/webhook/github")
                     </Info>
                 }
+                else if (TriggerInput.TriggerType == TriggerType.AutomateDotWebhook)
+                {
+                    <EditText @bind-Value=@TriggerInput.AutomateDotWebhookTriggerConfiguration!.TriggerEvent Caption="Event" />
+                    <Info>
+                        Send your webhook request to: @NavigationManager.ToAbsoluteUri("api/webhook")
+                    </Info>
+                    <Info>
+                        Add the 'X-AutomateDot-Event' http request header as your trigger event
+                    </Info>
+                    <Info>
+                        Both Get and Post Http Methods are supported
+                    </Info>
+                }
 
                 <AlertError Message="@_error" />
 

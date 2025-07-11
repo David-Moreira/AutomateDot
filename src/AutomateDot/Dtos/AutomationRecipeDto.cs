@@ -15,10 +15,15 @@ public class AutomationRecipeTriggerDto
         set
         {
             GitHubWebhookTriggerConfiguration = null;
+            AutomateDotWebhookTriggerConfiguration = null;
             switch (value)
             {
                 case TriggerType.GitHubWebhook:
                     GitHubWebhookTriggerConfiguration = new();
+                    break;
+
+                case TriggerType.AutomateDotWebhook:
+                    AutomateDotWebhookTriggerConfiguration = new();
                     break;
             }
             _triggerType = value;
@@ -28,12 +33,18 @@ public class AutomationRecipeTriggerDto
     [ValidateComplexType]
     public GitHubWebhookTriggerConfiguration? GitHubWebhookTriggerConfiguration { get; set; } = new();
 
+    [ValidateComplexType]
+    public AutomateDotWebhookTriggerConfiguration? AutomateDotWebhookTriggerConfiguration { get; set; }
+
     public string GetTriggerConfiguration()
     {
         switch (TriggerType)
         {
             case TriggerType.GitHubWebhook:
                 return System.Text.Json.JsonSerializer.Serialize(GitHubWebhookTriggerConfiguration);
+
+            case TriggerType.AutomateDotWebhook:
+                return System.Text.Json.JsonSerializer.Serialize(AutomateDotWebhookTriggerConfiguration);
 
             default:
                 throw new ArgumentOutOfRangeException();

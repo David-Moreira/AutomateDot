@@ -44,10 +44,47 @@ public class WebhookController : AutomateDotController
         return Ok();
     }
 
-    [HttpGet()]
-    public async Task<IActionResult> Get(dynamic payload)
+    [HttpPost()]
+    public async Task<IActionResult> Post([FromBody] dynamic payload)
     {
         _logger.LogInformation("Payload {payload}", (object)payload);
-        return Ok("GET");
+
+        var recipe = new AutomationRecipe()
+        {
+            Name = "Main",
+            TriggerType = TriggerType.GitHubWebhook,
+            TriggerConfiguration = "{ \"TriggerEvent\": \"issues\" }",
+            ActionType = ActionType.Gotify,
+            ActionConfiguration = "{ \"Url\": \"http://192.168.1.19/message?token=A8L6EauXnHW0-_Y\", \"Message\": \"Hey From AutomateDot!\"}",
+        };
+
+        var config = System.Text.Json.JsonSerializer.Deserialize<AutomateDotWebhookTriggerConfiguration>(recipe.TriggerConfiguration);
+        if (!AutomateDotWebhookTrigger.ShouldTrigger(this.Request, config!))
+            return Ok();
+
+        await _actionsService.Execute(recipe.ActionType, recipe.ActionConfiguration);
+
+        return Ok();
+    }
+
+    [HttpGet()]
+    public async Task<IActionResult> Get()
+    {
+        var recipe = new AutomationRecipe()
+        {
+            Name = "Main",
+            TriggerType = TriggerType.GitHubWebhook,
+            TriggerConfiguration = "{ \"TriggerEvent\": \"issues\" }",
+            ActionType = ActionType.Gotify,
+            ActionConfiguration = "{ \"Url\": \"http://192.168.1.19/message?token=A8L6EauXnHW0-_Y\", \"Message\": \"Hey From AutomateDot!\"}",
+        };
+
+        var config = System.Text.Json.JsonSerializer.Deserialize<AutomateDotWebhookTriggerConfiguration>(recipe.TriggerConfiguration);
+        if (!AutomateDotWebhookTrigger.ShouldTrigger(this.Request, config!))
+            return Ok();
+
+        await _actionsService.Execute(recipe.ActionType, recipe.ActionConfiguration);
+
+        return Ok();
     }
 }

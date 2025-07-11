@@ -2,7 +2,8 @@
 
 public enum TriggerType
 {
-    GitHubWebhook
+    GitHubWebhook,
+    AutomateDotWebhook
 }
 
 public static class TriggerTypeExtensions
@@ -12,6 +13,7 @@ public static class TriggerTypeExtensions
         return type switch
         {
             TriggerType.GitHubWebhook => "GitHub Webhook",
+            TriggerType.AutomateDotWebhook => "AutomateDot Webhook",
             _ => throw new ArgumentOutOfRangeException(nameof(type))
         };
     }
