@@ -1,45 +1,55 @@
 ﻿using AutomateDot.Actions;
 using AutomateDot.Configurations;
+using AutomateDot.Data;
 using AutomateDot.Data.Entities;
 using AutomateDot.Data.Enums;
 using AutomateDot.Triggers;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AutomateDot.Controllers;
+
+public class AutomationService(ApplicationDbContext ApplicationDbContext)
+{
+    public async Task<List<AutomationRecipe>> GetByTriggerType(TriggerType triggerType)
+    {
+        return await ApplicationDbContext.AutomationRecipes
+            .Where(x => x.TriggerType == triggerType)
+            .ToListAsync();
+    }
+}
 
 [AllowAnonymous]
 public class WebhookController : AutomateDotController
 {
+    private readonly AutomationService _automationService;
     private readonly ActionsService _actionsService;
     private readonly ILogger<WebhookController> _logger;
 
-    public WebhookController(ILogger<WebhookController> logger, ActionsService actionsService)
+    public WebhookController(ILogger<WebhookController> logger, ActionsService actionsService, AutomationService automationService)
     {
         _logger = logger;
-        this._actionsService = actionsService;
+        _actionsService = actionsService;
+        _automationService = automationService;
     }
 
     [HttpPost("github")]
     public async Task<IActionResult> Github([FromBody] dynamic payload)
     {
-        _logger.LogInformation("Payload {payload}", (object)payload);
+        _logger.LogInformation("Github Payload {payload}", (object)payload);
 
-        var recipe = new AutomationRecipe()
+        var recipes = await _automationService.GetByTriggerType(TriggerType.GitHubWebhook);
+
+        foreach (var recipe in recipes)
         {
-            Name = "Main",
-            TriggerType = TriggerType.GitHubWebhook,
-            TriggerConfiguration = "{ \"TriggerEvent\": \"issues\" }",
-            ActionType = ActionType.Gotify,
-            ActionConfiguration = "{ \"Url\": \"http://192.168.1.19/message?token=A8L6EauXnHW0-_Y\", \"Message\": \"Hey From AutomateDot!\"}",
-        };
+            var config = System.Text.Json.JsonSerializer.Deserialize<GitHubWebhookTriggerConfiguration>(recipe.TriggerConfiguration);
+            if (!await GitHubWebhookTrigger.ShouldTrigger(this.Request, config!))
+                return Ok();
 
-        var config = System.Text.Json.JsonSerializer.Deserialize<GitHubWebhookTriggerConfiguration>(recipe.TriggerConfiguration);
-        if (!await GitHubWebhookTrigger.ShouldTrigger(this.Request, config!))
-            return Ok();
-
-        await _actionsService.Execute(recipe.ActionType, recipe.ActionConfiguration);
+            await _actionsService.Execute(recipe);
+        }
 
         return Ok();
     }
@@ -47,22 +57,18 @@ public class WebhookController : AutomateDotController
     [HttpPost()]
     public async Task<IActionResult> Post([FromBody] dynamic payload)
     {
-        _logger.LogInformation("Payload {payload}", (object)payload);
+        _logger.LogInformation("AutomateDot Payload {payload}", (object)payload);
 
-        var recipe = new AutomationRecipe()
+        var recipes = await _automationService.GetByTriggerType(TriggerType.AutomateDotWebhook);
+
+        foreach (var recipe in recipes)
         {
-            Name = "Main",
-            TriggerType = TriggerType.GitHubWebhook,
-            TriggerConfiguration = "{ \"TriggerEvent\": \"issues\" }",
-            ActionType = ActionType.Gotify,
-            ActionConfiguration = "{ \"Url\": \"http://192.168.1.19/message?token=A8L6EauXnHW0-_Y\", \"Message\": \"Hey From AutomateDot!\"}",
-        };
+            var config = System.Text.Json.JsonSerializer.Deserialize<AutomateDotWebhookTriggerConfiguration>(recipe.TriggerConfiguration);
+            if (!AutomateDotWebhookTrigger.ShouldTrigger(this.Request, config!))
+                return Ok();
 
-        var config = System.Text.Json.JsonSerializer.Deserialize<AutomateDotWebhookTriggerConfiguration>(recipe.TriggerConfiguration);
-        if (!AutomateDotWebhookTrigger.ShouldTrigger(this.Request, config!))
-            return Ok();
-
-        await _actionsService.Execute(recipe.ActionType, recipe.ActionConfiguration);
+            await _actionsService.Execute(recipe);
+        }
 
         return Ok();
     }
@@ -70,20 +76,16 @@ public class WebhookController : AutomateDotController
     [HttpGet()]
     public async Task<IActionResult> Get()
     {
-        var recipe = new AutomationRecipe()
+        var recipes = await _automationService.GetByTriggerType(TriggerType.AutomateDotWebhook);
+
+        foreach (var recipe in recipes)
         {
-            Name = "Main",
-            TriggerType = TriggerType.GitHubWebhook,
-            TriggerConfiguration = "{ \"TriggerEvent\": \"issues\" }",
-            ActionType = ActionType.Gotify,
-            ActionConfiguration = "{ \"Url\": \"http://192.168.1.19/message?token=A8L6EauXnHW0-_Y\", \"Message\": \"Hey From AutomateDot!\"}",
-        };
+            var config = System.Text.Json.JsonSerializer.Deserialize<AutomateDotWebhookTriggerConfiguration>(recipe.TriggerConfiguration);
+            if (!AutomateDotWebhookTrigger.ShouldTrigger(this.Request, config!))
+                return Ok();
 
-        var config = System.Text.Json.JsonSerializer.Deserialize<AutomateDotWebhookTriggerConfiguration>(recipe.TriggerConfiguration);
-        if (!AutomateDotWebhookTrigger.ShouldTrigger(this.Request, config!))
-            return Ok();
-
-        await _actionsService.Execute(recipe.ActionType, recipe.ActionConfiguration);
+            await _actionsService.Execute(recipe);
+        }
 
         return Ok();
     }

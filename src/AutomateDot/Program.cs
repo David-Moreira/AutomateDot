@@ -1,5 +1,6 @@
 using AutomateDot.Actions;
 using AutomateDot.Components;
+using AutomateDot.Controllers;
 using AutomateDot.Data;
 
 using Microsoft.AspNetCore.ResponseCompression;
@@ -41,6 +42,8 @@ try
     });
 
     builder.Services.AddHttpClient();
+    builder.Services.AddScoped<AutomationService>();
+    builder.Services.AddScoped<AutomationExecutionService>();
     builder.Services.AddScoped<ActionsService>();
     builder.Services.AddScoped<SendWebhookAction>();
     builder.Services.AddScoped<GotifyAction>();
