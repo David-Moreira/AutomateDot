@@ -44,6 +44,7 @@ try
     builder.Services.AddScoped<ActionsService>();
     builder.Services.AddScoped<SendWebhookAction>();
     builder.Services.AddScoped<GotifyAction>();
+    builder.Services.AddScoped<ScriptAction>();
 
     var app = builder.Build();
 
