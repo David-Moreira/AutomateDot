@@ -1,0 +1,61 @@
+﻿<div class="@($"modal {(_isVisible ? _modalOpenClass : "")}")" role="dialog">
+    <div class="modal-box md:max-w-3xl max-w-full w-full max-h-full md:h-auto h-full md:rounded-md rounded-none">
+        <h3 class="text-lg font-bold">@Title</h3>
+        <div>
+            @ChildContent
+        </div>
+        <div class="modal-action">
+            @FooterContent
+            @if ( AllowCancel )
+            {
+                <label class="btn" @onclick="@Cancel">Cancel</label>
+            }
+            <button type="button" class="btn btn-primary" @onclick="@Ok">@ConfirmCaption</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string _modalOpenClass = "modal-open";
+    private bool _isVisible = false;
+    public bool IsVisible
+        => _isVisible;
+
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? FooterContent { get; set; }
+    [Parameter] public EventCallback OnConfirm { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public bool AutoCloseOnConfirm { get; set; }
+    [Parameter] public bool AllowCancel { get; set; } = true;
+    [Parameter] public string ConfirmCaption { get; set; } = "Save";
+
+    private async Task Cancel()
+    {
+        await OnCancel.InvokeAsync();
+        await Close();
+    }
+
+    private async Task Ok()
+    {
+        await OnConfirm.InvokeAsync();
+        if ( AutoCloseOnConfirm )
+        {
+            await Close();
+        }
+    }
+
+    public Task Open()
+    {
+        _isVisible = true;
+        return InvokeAsync( StateHasChanged );
+    }
+
+    public async Task Close()
+    {
+        _isVisible = false;
+        await OnClose.InvokeAsync();
+        await InvokeAsync( StateHasChanged );
+    }
+}

@@ -1,0 +1,70 @@
+﻿<div class="@($"modal {(_isVisible ? _modalOpenClass : "")}")" role="dialog">
+    <div class="modal-box max-w-3xl">
+        <h3 class="text-lg font-bold">@_title</h3>
+        <div>
+            @_message
+        </div>
+        <div class="modal-action">
+            @if ( CanCancel )
+            {
+                <button class="btn" @onclick="@Cancel">Cancel</button>
+            }
+            <button class="@($"btn {(IsDanger ? "btn-error" : "btn-primary" )}")" @onclick="@Ok">Ok</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public bool AutoCloseOnConfirm { get; set; }
+    [Parameter] public bool IsDanger { get; set; }
+    [Parameter] public bool CanCancel { get; set; } = true;
+
+    private string _title = string.Empty;
+    private string _message = string.Empty;
+    private string _modalOpenClass = "modal-open";
+    private bool _isVisible = false;
+    private TaskCompletionSource<bool> _confirmCallback = null!;
+
+    private async Task Cancel()
+    {
+        _confirmCallback.SetResult( false );
+        await Close();
+    }
+
+    private async Task Ok()
+    {
+        _confirmCallback.SetResult( true );
+        await Close();
+    }
+
+
+    private Task Open()
+    {
+        _isVisible = true;
+        return InvokeAsync( StateHasChanged );
+    }
+
+    private async Task Close()
+    {
+        _isVisible = false;
+        await OnClose.InvokeAsync();
+        await InvokeAsync( StateHasChanged );
+    }
+
+    public Task<bool> Confirm( string title )
+    {
+        return Confirm( title, string.Empty );
+    }
+
+    public async Task<bool> Confirm( string title, string message )
+    {
+        _confirmCallback = new TaskCompletionSource<bool>();
+        _title = title;
+        _message = message;
+
+        await Open();
+
+        return await _confirmCallback.Task;
+    }
+}

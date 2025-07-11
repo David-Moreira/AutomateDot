@@ -15,6 +15,7 @@ public sealed class AutomationExecution : BaseEntity
 {
     public int AutomationRecipeId { get; set; }
     public string Name { get; set; } = string.Empty;
+    public ExecutionStatus Status { get; set; }
     public TriggerType TriggerType { get; set; }
     public ActionType ActionType { get; set; }
     public AutomationRecipe AutomationRecipe { get; set; } = default!;

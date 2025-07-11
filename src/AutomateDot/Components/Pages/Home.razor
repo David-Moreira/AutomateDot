@@ -6,7 +6,52 @@
 
 <PageTitle>AutomateDot</PageTitle>
 
-<PageContainer>
+<PageContainer Title="Executions">
     <ChildContent>
+        <Loading IsLoading="_isLoading">
+            <AutomationExecutions Data="_executions" />
+        </Loading>
     </ChildContent>
 </PageContainer>
+
+@code {
+    [Inject] public ApplicationDbContext ApplicationDbContext { get; set; } = default!;
+    private List<AutomationExecution> _executions = new();
+    private bool _isLoading;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            await base.OnInitializedAsync();
+            await LoadData();
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            _executions = await ApplicationDbContext.AutomationExecutions
+                    .Include(x=> x.AutomationExecutionEntries)
+                    .OrderByDescending(x=> x.CreatedOn)
+                    .ToListAsync();
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+}
