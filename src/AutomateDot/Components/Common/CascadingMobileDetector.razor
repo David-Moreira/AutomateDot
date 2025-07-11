@@ -1,0 +1,30 @@
+﻿<CascadingValue Value="this">@ChildContent </CascadingValue>
+@code {
+    [Inject] public IJSRuntime JSRuntime { get; set; } = default!;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    public bool IsMobile = false;
+    protected override async Task OnAfterRenderAsync( bool firstRender )
+    {
+        await base.OnAfterRenderAsync( firstRender );
+
+        if ( firstRender )
+        {
+            try
+            {
+                IsMobile = await JSRuntime.InvokeAsync<bool>( "isMobile" );
+                if ( IsMobile )
+                {
+                    StateHasChanged();
+                }
+            }
+            catch ( Exception )
+            {
+
+                IsMobile = false;
+            }
+            finally
+            {
+            }
+        }
+    }
+}

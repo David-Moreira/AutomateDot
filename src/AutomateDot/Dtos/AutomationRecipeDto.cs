@@ -1,4 +1,5 @@
 ﻿using AutomateDot.Configurations;
+using AutomateDot.Data.Entities;
 using AutomateDot.Data.Enums;
 
 using System.ComponentModel.DataAnnotations;
@@ -45,6 +46,24 @@ public class AutomationRecipeTriggerDto
 
             case TriggerType.AutomateDotWebhook:
                 return System.Text.Json.JsonSerializer.Serialize(AutomateDotWebhookTriggerConfiguration);
+
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    public void SetTriggerConfiguration(AutomationRecipe automationRecipe)
+    {
+        TriggerType = automationRecipe.TriggerType;
+        switch (automationRecipe.TriggerType)
+        {
+            case TriggerType.GitHubWebhook:
+                GitHubWebhookTriggerConfiguration = System.Text.Json.JsonSerializer.Deserialize<GitHubWebhookTriggerConfiguration>(automationRecipe.TriggerConfiguration);
+                break;
+
+            case TriggerType.AutomateDotWebhook:
+                AutomateDotWebhookTriggerConfiguration = System.Text.Json.JsonSerializer.Deserialize<AutomateDotWebhookTriggerConfiguration>(automationRecipe.TriggerConfiguration);
+                break;
 
             default:
                 throw new ArgumentOutOfRangeException();
@@ -97,6 +116,24 @@ public class AutomationRecipeActionDto
                 throw new ArgumentOutOfRangeException();
         }
     }
+
+    public void SetActionConfiguration(AutomationRecipe automationRecipe)
+    {
+        ActionType = automationRecipe.ActionType;
+        switch (automationRecipe.ActionType)
+        {
+            case Data.Enums.ActionType.SendWebhook:
+                SendWebhookConfiguration = System.Text.Json.JsonSerializer.Deserialize<SendWebhookConfiguration>(automationRecipe.ActionConfiguration);
+                break;
+
+            case Data.Enums.ActionType.Gotify:
+                GotifyConfiguration = System.Text.Json.JsonSerializer.Deserialize<GotifyConfiguration>(automationRecipe.ActionConfiguration);
+                break;
+
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
 }
 
 public class AutomationRecipeDefinitionDto
@@ -107,82 +144,9 @@ public class AutomationRecipeDefinitionDto
 
 public class AutomationRecipeDto
 {
-    private TriggerType _triggerType;
-    private ActionType _actionType;
-
-    [Required]
+    public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
 
-    public TriggerType TriggerType
-    {
-        get => _triggerType;
-        set
-        {
-            GitHubWebhookTriggerConfiguration = null;
-            switch (value)
-            {
-                case TriggerType.GitHubWebhook:
-                    GitHubWebhookTriggerConfiguration = new();
-                    break;
-            }
-            _triggerType = value;
-        }
-    }
-
-    public ActionType ActionType
-    {
-        get => _actionType;
-        set
-        {
-            SendWebhookConfiguration = null;
-            GotifyConfiguration = null;
-            switch (value)
-            {
-                case Data.Enums.ActionType.SendWebhook:
-                    SendWebhookConfiguration = new();
-                    break;
-
-                case Data.Enums.ActionType.Gotify:
-                    GotifyConfiguration = new();
-                    break;
-            }
-            _actionType = value;
-        }
-    }
-
-    [ValidateComplexType]
-    public GitHubWebhookTriggerConfiguration? GitHubWebhookTriggerConfiguration { get; set; } = new();
-
-    [ValidateComplexType]
-    public SendWebhookConfiguration? SendWebhookConfiguration { get; set; } = new();
-
-    [ValidateComplexType]
-    public GotifyConfiguration? GotifyConfiguration { get; set; }
-
-    public string GetTriggerConfiguration()
-    {
-        switch (TriggerType)
-        {
-            case TriggerType.GitHubWebhook:
-                return System.Text.Json.JsonSerializer.Serialize(GitHubWebhookTriggerConfiguration);
-
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-    }
-
-    public string GetActionConfiguration()
-    {
-        switch (ActionType)
-        {
-            case Data.Enums.ActionType.SendWebhook:
-                return System.Text.Json.JsonSerializer.Serialize(SendWebhookConfiguration);
-
-            case Data.Enums.ActionType.Gotify:
-                return System.Text.Json.JsonSerializer.Serialize(GotifyConfiguration);
-
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-    }
+    public TriggerType TriggerType { get; set; }
+    public ActionType ActionType { get; set; }
 }

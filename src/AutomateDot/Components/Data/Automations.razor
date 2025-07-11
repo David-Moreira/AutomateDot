@@ -1,0 +1,75 @@
+﻿@using AutomateDot.Extensions
+@if (Data.IsNullOrEmpty())
+{
+    <div>You have no records yet.</div>
+}
+else
+{
+    @if (CascadingMobileDetector.IsMobile)
+    {
+        <div>
+            <table class="table w-full">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Trigger</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Data ?? Enumerable.Empty<AutomationRecipeDto>())
+                    {
+                        <tr class="hover:bg-base-300" @onclick="() => GoToDetail(item)">
+                            <td>
+                                <div class="text-sm font-bold">@item.Name</div>
+                            </td>
+                            <td>
+                                <div class="text-sm">@item.TriggerType.ToFriendlyString()</div>
+                            </td>
+                            <td>
+                                <div class="text-sm">@item.ActionType.ToFriendlyString()</div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="overflow-x-auto">
+            <table class="table w-full">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Trigger</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Data ?? Enumerable.Empty<AutomationRecipeDto>())
+                    {
+                        <tr class="hover:bg-base-300" @onclick="() => GoToDetail(item)">
+                            <td>
+                                <div class="font-bold">@item.Name</div>
+                            </td>
+                            <td>@item.TriggerType.ToFriendlyString()</td>
+                            <td>@item.ActionType.ToFriendlyString()</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+}
+@code {
+    [CascadingParameter] public CascadingMobileDetector CascadingMobileDetector { get; set; } = default!;
+    [EditorRequired][Parameter] public List<AutomationRecipeDto>? Data { get; set; }
+    [Inject] public NavigationManager NavigationManager { get; set; } = default!;
+
+
+    public void GoToDetail(AutomationRecipeDto item)
+    {
+        NavigationManager.NavigateTo($"/automates/{item.Id}");
+    }
+}
