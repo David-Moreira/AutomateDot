@@ -5,15 +5,13 @@
 /// </summary>
 public enum GitHubWebhookTriggerEvent
 {
-    Create,
-    Delete,
-    Deployment,
-    Discussion,
-    Issues,
-    PullRequest,
-    WorkflowDispatch,
-    WorkflowJob,
-    WorkflowRun
+    CreateBranch,
+    DeleteBranch,
+    CreateTag,
+    DeleteTag,
+    Released,
+    NewIssue,
+    NewPullRequest,
 }
 
 public static class GitHubWebhookTriggerEventExtensions
@@ -22,15 +20,13 @@ public static class GitHubWebhookTriggerEventExtensions
     {
         return type switch
         {
-            GitHubWebhookTriggerEvent.Create => "Create",
-            GitHubWebhookTriggerEvent.Delete => "Delete",
-            GitHubWebhookTriggerEvent.Deployment => "Deployment",
-            GitHubWebhookTriggerEvent.Discussion => "Discussion",
-            GitHubWebhookTriggerEvent.Issues => "Issues",
-            GitHubWebhookTriggerEvent.PullRequest => "Pull Request",
-            GitHubWebhookTriggerEvent.WorkflowDispatch => "Workflow Dispatch",
-            GitHubWebhookTriggerEvent.WorkflowJob => "Workflow Job",
-            GitHubWebhookTriggerEvent.WorkflowRun => "Workflow Run",
+            GitHubWebhookTriggerEvent.CreateBranch => "Create Branch",
+            GitHubWebhookTriggerEvent.DeleteBranch => "Delete Branch",
+            GitHubWebhookTriggerEvent.CreateTag => "Create Tag",
+            GitHubWebhookTriggerEvent.DeleteTag => "Delete Tag",
+            GitHubWebhookTriggerEvent.Released => "Released",
+            GitHubWebhookTriggerEvent.NewIssue => "New Issue",
+            GitHubWebhookTriggerEvent.NewPullRequest => "New Pull Request",
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
     }

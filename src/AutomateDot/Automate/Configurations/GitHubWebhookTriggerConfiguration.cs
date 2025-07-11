@@ -7,10 +7,12 @@ public sealed class GitHubWebhookTriggerConfiguration()
     public string GithubTriggerEvent
         => TriggerEvent switch
         {
-            GitHubWebhookTriggerEvent.PullRequest => "pull_request",
-            GitHubWebhookTriggerEvent.WorkflowDispatch => "workflow_dispatch",
-            GitHubWebhookTriggerEvent.WorkflowJob => "workflow_job",
-            GitHubWebhookTriggerEvent.WorkflowRun => "workflow_run",
+            GitHubWebhookTriggerEvent.CreateBranch => "create",
+            GitHubWebhookTriggerEvent.DeleteBranch => "delete",
+            GitHubWebhookTriggerEvent.CreateTag => "create",
+            GitHubWebhookTriggerEvent.DeleteTag => "delete",
+            GitHubWebhookTriggerEvent.NewPullRequest => "pull_request",
+            GitHubWebhookTriggerEvent.NewIssue => "issues",
             _ => TriggerEvent.ToString().ToLower()
         };
 

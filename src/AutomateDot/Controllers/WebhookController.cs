@@ -36,7 +36,7 @@ public class WebhookController : AutomateDotController
         };
 
         var config = System.Text.Json.JsonSerializer.Deserialize<GitHubWebhookTriggerConfiguration>(recipe.TriggerConfiguration);
-        if (!GitHubWebhookTrigger.ShouldTrigger(this.Request, config!))
+        if (!await GitHubWebhookTrigger.ShouldTrigger(this.Request, config!))
             return Ok();
 
         await _actionsService.Execute(recipe.ActionType, recipe.ActionConfiguration);
