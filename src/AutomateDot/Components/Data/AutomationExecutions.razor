@@ -23,7 +23,7 @@ else
                         <tr class="hover:bg-base-300" @onclick="() => GoToDetail(item)">
                             <td>
                                 <div class="text-sm font-bold">@item.Name</div>
-                                <div class="text-xs opacity-50">@item.CreatedOn</div>
+                                <div class="text-xs opacity-50">@item.CreatedOn.ToLocalTime()</div>
                             </td>
                             <td>
                                 <div class="text-sm">@item.TriggerType.ToFriendlyString()</div>
@@ -60,7 +60,7 @@ else
                             <td>
                                 <div class="font-bold">@item.Name</div>
                             </td>
-                            <td>@item.CreatedOn</td>
+                            <td>@item.CreatedOn.ToLocalTime()</td>
                             <td>@item.TriggerType.ToFriendlyString()</td>
                             <td>@item.ActionType.ToFriendlyString()</td>
                             <td>@item.Status</td>
