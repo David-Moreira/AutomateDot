@@ -120,6 +120,9 @@ public class AutomationRecipeActionDto
             case Data.Enums.ActionType.Gotify:
                 return System.Text.Json.JsonSerializer.Serialize(GotifyConfiguration);
 
+            case Data.Enums.ActionType.Script:
+                return System.Text.Json.JsonSerializer.Serialize(ScriptConfiguration);
+
             default:
                 throw new ArgumentOutOfRangeException();
         }

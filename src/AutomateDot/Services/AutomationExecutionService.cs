@@ -4,7 +4,7 @@ using AutomateDot.Data.Enums;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace AutomateDot.Actions;
+namespace AutomateDot.Services;
 
 public class AutomationExecutionService(ApplicationDbContext ApplicationDbContext)
 {

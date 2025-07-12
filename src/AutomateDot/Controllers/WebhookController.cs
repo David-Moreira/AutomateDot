@@ -1,25 +1,13 @@
 ﻿using AutomateDot.Actions;
 using AutomateDot.Configurations;
-using AutomateDot.Data;
-using AutomateDot.Data.Entities;
 using AutomateDot.Data.Enums;
+using AutomateDot.Services;
 using AutomateDot.Triggers;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace AutomateDot.Controllers;
-
-public class AutomationService(ApplicationDbContext ApplicationDbContext)
-{
-    public async Task<List<AutomationRecipe>> GetByTriggerType(TriggerType triggerType)
-    {
-        return await ApplicationDbContext.AutomationRecipes
-            .Where(x => x.TriggerType == triggerType)
-            .ToListAsync();
-    }
-}
 
 [AllowAnonymous]
 public class WebhookController : AutomateDotController
@@ -38,7 +26,7 @@ public class WebhookController : AutomateDotController
     [HttpPost("github")]
     public async Task<IActionResult> Github([FromBody] dynamic payload)
     {
-        _logger.LogInformation("Github Payload {payload}", (object)payload);
+        _logger.LogInformation("Github Webhook Payload {payload}", (object)payload);
 
         var recipes = await _automationService.GetByTriggerType(TriggerType.GitHubWebhook);
 
@@ -57,7 +45,7 @@ public class WebhookController : AutomateDotController
     [HttpPost()]
     public async Task<IActionResult> Post([FromBody] dynamic payload)
     {
-        _logger.LogInformation("AutomateDot Payload {payload}", (object)payload);
+        _logger.LogInformation("AutomateDot Webhook Payload {payload}", (object)payload);
 
         var recipes = await _automationService.GetByTriggerType(TriggerType.AutomateDotWebhook);
 

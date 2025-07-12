@@ -1,0 +1,43 @@
+@using AutomateDot.Data
+@using Microsoft.EntityFrameworkCore
+
+@if (TriggerInput is not null)
+{
+    <EditSelect @bind-Value="TriggerInput.TriggerType" Caption="Trigger">
+        @foreach (var item in Enum.GetValues<TriggerType>())
+        {
+            <option value="@item">@item.ToFriendlyString()</option>
+        }
+    </EditSelect>
+
+    @if (TriggerInput.TriggerType == TriggerType.GitHubWebhook)
+    {
+        <EditText @bind-Value=@TriggerInput.GitHubWebhookTriggerConfiguration!.Repository Caption="Repository" />
+        <EditSelect @bind-Value="TriggerInput.GitHubWebhookTriggerConfiguration!.TriggerEvent" Caption="Event">
+            @foreach (var item in Enum.GetValues<GitHubWebhookTriggerEvent>())
+            {
+                <option value="@item">@item.ToFriendlyString()</option>
+            }
+        </EditSelect>
+        <Info>
+            Please configure your github webhook to: @NavigationManager.ToAbsoluteUri("api/webhook/github")
+        </Info>
+    }
+    else if (TriggerInput.TriggerType == TriggerType.AutomateDotWebhook)
+    {
+        <EditText @bind-Value=@TriggerInput.AutomateDotWebhookTriggerConfiguration!.TriggerEvent Caption="Event" />
+        <Info>
+            Send your webhook request to: @NavigationManager.ToAbsoluteUri("api/webhook")
+        </Info>
+        <Info>
+            Add the 'X-AutomateDot-Event' http request header as your trigger event
+        </Info>
+        <Info>
+            Both Get and Post Http Methods are supported
+        </Info>
+    }
+}
+@code {
+    [Inject] public NavigationManager NavigationManager { get; set; } = default!;
+    [Parameter] public AutomationRecipeTriggerDto? TriggerInput { get; set; }
+}

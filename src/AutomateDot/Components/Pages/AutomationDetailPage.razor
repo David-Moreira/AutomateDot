@@ -41,39 +41,7 @@
                 <EditForm Model="TriggerInput" OnValidSubmit="Next" method="post" class="space-y-2">
                     <ObjectGraphDataAnnotationsValidator />
 
-                    <EditSelect @bind-Value="TriggerInput.TriggerType" Caption="Trigger">
-                        @foreach (var item in Enum.GetValues<TriggerType>())
-                        {
-                            <option value="@item">@item.ToFriendlyString()</option>
-                        }
-                    </EditSelect>
-
-                    @if (TriggerInput.TriggerType == TriggerType.GitHubWebhook)
-                    {
-                        <EditText @bind-Value=@TriggerInput.GitHubWebhookTriggerConfiguration!.Repository Caption="Repository" />
-                        <EditSelect @bind-Value="TriggerInput.GitHubWebhookTriggerConfiguration!.TriggerEvent" Caption="Event">
-                            @foreach (var item in Enum.GetValues<GitHubWebhookTriggerEvent>())
-                            {
-                                <option value="@item">@item.ToFriendlyString()</option>
-                            }
-                        </EditSelect>
-                        <Info>
-                            Please configure your github webhook to: @NavigationManager.ToAbsoluteUri("api/webhook/github")
-                        </Info>
-                    }
-                    else if (TriggerInput.TriggerType == TriggerType.AutomateDotWebhook)
-                    {
-                        <EditText @bind-Value=@TriggerInput.AutomateDotWebhookTriggerConfiguration!.TriggerEvent Caption="Event" />
-                        <Info>
-                            Send your webhook request to: @NavigationManager.ToAbsoluteUri("api/webhook")
-                        </Info>
-                        <Info>
-                            Add the 'X-AutomateDot-Event' http request header as your trigger event
-                        </Info>
-                        <Info>
-                            Both Get and Post Http Methods are supported
-                        </Info>
-                    }
+                    <AutomationRecipeTrigger TriggerInput="TriggerInput" />
 
                     <AlertError Message="@_error" />
 
@@ -90,24 +58,7 @@
                 <EditForm Model="ActionInput" OnValidSubmit="OnValidSubmitAsync" method="post" class="space-y-2">
                     <ObjectGraphDataAnnotationsValidator />
 
-                    <EditSelect @bind-Value="ActionInput.ActionType" Caption="Action">
-                        @foreach (var item in Enum.GetValues<ActionType>())
-                        {
-                            <option value="@item">@item.ToFriendlyString()</option>
-                        }
-                    </EditSelect>
-                    @if (ActionInput.ActionType == ActionType.SendWebhook)
-                    {
-                        <EditText @bind-Value="ActionInput.SendWebhookConfiguration!.Url" Caption="Url" />
-                        <EditText @bind-Value="ActionInput.SendWebhookConfiguration!.Message" Caption="Message" />
-                    }
-                    else if (ActionInput.ActionType == ActionType.Gotify)
-                    {
-                        <EditText @bind-Value="ActionInput.GotifyConfiguration!.Url" Caption="Url" />
-                        <EditText @bind-Value="ActionInput.GotifyConfiguration!.Title" Caption="Title" />
-                        <EditText @bind-Value="ActionInput.GotifyConfiguration!.Message" Caption="Message" />
-                        <EditNumber @bind-Value="ActionInput.GotifyConfiguration!.Priority" Caption="Priority" />
-                    }
+                    <AutomationRecipeAction ActionInput="ActionInput" />
 
                     <AlertError Message="@_error" />
 
