@@ -98,7 +98,7 @@
             
             DefinitionInput.Name = Input.Name;
             TriggerInput.SetTriggerConfiguration(Input);
-            ActionInput.SetActionConfiguration(Input);
+            // ActionInput.SetActionConfiguration(Input);
         }
         finally
         {
@@ -150,8 +150,8 @@
             Input.Name = DefinitionInput.Name;
             Input.TriggerType = TriggerInput.TriggerType;
             Input.TriggerConfiguration = TriggerInput.GetTriggerConfiguration();
-            Input.ActionType = ActionInput.ActionType;
-            Input.ActionConfiguration = ActionInput.GetActionConfiguration();
+            // Input.ActionType = ActionInput.ActionType;
+            // Input.ActionConfiguration = ActionInput.GetActionConfiguration();
 
             ApplicationDbContext.AutomationRecipes.Update(Input);
             await ApplicationDbContext.SaveChangesAsync();

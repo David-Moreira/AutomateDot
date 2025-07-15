@@ -1,4 +1,5 @@
 ﻿@page "/automates/create"
+@using AutomateDot.Components.Automation
 @using AutomateDot.Data
 
 <PageContainer>
@@ -112,8 +113,8 @@
                 Name = DefinitionInput.Name,
                 TriggerType = TriggerInput.TriggerType,
                 TriggerConfiguration = TriggerInput.GetTriggerConfiguration(),
-                ActionType = ActionInput.ActionType,
-                ActionConfiguration = ActionInput.GetActionConfiguration()
+                ActionType = ActionType.SendWebhook,
+                ActionConfiguration = ActionInput.GetConfiguration()
             };
 
             await ApplicationDbContext.AddAsync(newRecipe);

@@ -1,0 +1,6 @@
+﻿@using AutomateDot.Configurations  
+@inherits ActionFormBase<ScriptConfiguration>  
+@attribute [AutomateActionName("Script")] 
+
+<EditText @bind-Value="ActionConfiguration.File" Caption="File" />  
+<EditText @bind-Value="ActionConfiguration.Arguments" Caption="Arguments" />

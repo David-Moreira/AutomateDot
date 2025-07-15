@@ -1,0 +1,8 @@
+﻿@using AutomateDot.Configurations
+@inherits ActionFormBase<GotifyConfiguration>
+@attribute [AutomateActionName("Gotify")]
+
+<EditText @bind-Value="ActionConfiguration.Url" Caption="Url" />
+<EditText @bind-Value="ActionConfiguration.Title" Caption="Title" />
+<EditText @bind-Value="ActionConfiguration.Message" Caption="Message" />
+<EditNumber @bind-Value="ActionConfiguration.Priority" Caption="Priority" />

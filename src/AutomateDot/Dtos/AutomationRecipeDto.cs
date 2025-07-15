@@ -73,81 +73,25 @@ public class AutomationRecipeTriggerDto
 
 public class AutomationRecipeActionDto
 {
-    private ActionType _actionType;
+    public string? Action { get; set; }
 
-    public ActionType ActionType
+    public Type? FormType { get; set; }
+
+    [ValidateComplexType]
+    public object? Configuration { get; set; }
+
+    public string GetConfigurationName()
     {
-        get => _actionType;
-        set
-        {
-            SendWebhookConfiguration = null;
-            GotifyConfiguration = null;
-            ScriptConfiguration = null;
-            switch (value)
-            {
-                case Data.Enums.ActionType.SendWebhook:
-                    SendWebhookConfiguration = new();
-                    break;
-
-                case Data.Enums.ActionType.Gotify:
-                    GotifyConfiguration = new();
-                    break;
-
-                case Data.Enums.ActionType.Script:
-                    ScriptConfiguration = new();
-                    break;
-            }
-            _actionType = value;
-        }
+        return Configuration?.GetType()?.AssemblyQualifiedName ?? string.Empty;
     }
 
-    [ValidateComplexType]
-    public SendWebhookConfiguration? SendWebhookConfiguration { get; set; } = new();
-
-    [ValidateComplexType]
-    public GotifyConfiguration? GotifyConfiguration { get; set; }
-
-    [ValidateComplexType]
-    public ScriptConfiguration? ScriptConfiguration { get; set; }
-
-    public string GetActionConfiguration()
+    public string GetConfiguration()
     {
-        switch (ActionType)
-        {
-            case Data.Enums.ActionType.SendWebhook:
-                return System.Text.Json.JsonSerializer.Serialize(SendWebhookConfiguration);
-
-            case Data.Enums.ActionType.Gotify:
-                return System.Text.Json.JsonSerializer.Serialize(GotifyConfiguration);
-
-            case Data.Enums.ActionType.Script:
-                return System.Text.Json.JsonSerializer.Serialize(ScriptConfiguration);
-
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
+        return System.Text.Json.JsonSerializer.Serialize(Configuration);
     }
 
-    public void SetActionConfiguration(AutomationRecipe automationRecipe)
+    public void SetConfiguration(AutomationRecipe automationRecipe)
     {
-        ActionType = automationRecipe.ActionType;
-        switch (automationRecipe.ActionType)
-        {
-            case Data.Enums.ActionType.SendWebhook:
-                SendWebhookConfiguration = System.Text.Json.JsonSerializer.Deserialize<SendWebhookConfiguration>(automationRecipe.ActionConfiguration);
-                break;
-
-            case Data.Enums.ActionType.Gotify:
-                GotifyConfiguration = System.Text.Json.JsonSerializer.Deserialize<GotifyConfiguration>(automationRecipe.ActionConfiguration);
-                break;
-
-            case Data.Enums.ActionType.Script:
-                ScriptConfiguration = System.Text.Json.JsonSerializer.Deserialize<ScriptConfiguration>(automationRecipe.ActionConfiguration);
-                break;
-
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
     }
 }
 

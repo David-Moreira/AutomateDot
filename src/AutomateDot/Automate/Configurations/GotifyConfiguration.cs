@@ -1,8 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using AutomateDot.Components.Automation;
+
+using System.ComponentModel.DataAnnotations;
 
 namespace AutomateDot.Configurations;
 
-public sealed class GotifyConfiguration()
+public sealed class GotifyConfiguration : IActionConfiguration
 {
     [Required]
     public string Url { get; set; } = string.Empty;

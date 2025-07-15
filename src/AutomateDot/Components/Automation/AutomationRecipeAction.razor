@@ -1,0 +1,38 @@
+@using AutomateDot.Automate
+@using AutomateDot.Data
+@using Microsoft.EntityFrameworkCore
+
+<EditSelect TValue="string" Value="@ActionInput.Action" ValueChanged="SelectedFormChanged" ValueExpression="() => ActionInput.Action" Caption="Action">
+        <option value=""></option>
+        @foreach (var item in AutomateFormRegistry.ActionForms)
+        {
+            <option value="@item.Name">@item.Name</option>
+        }
+</EditSelect>
+
+@if (ActionInput.FormType is not null && ActionInput.Configuration is not null)
+    {
+    <DynamicComponent Type="@ActionInput.FormType" Parameters="@(new Dictionary<string, object> { ["ActionConfiguration"] = ActionInput.Configuration })" />
+    }
+
+@code {
+    [Inject] public IServiceProvider ServiceProvider { get; set; } = default!;
+    [Parameter] public AutomationRecipeActionDto ActionInput { get; set; } = new();
+
+    private void SelectedFormChanged(string selectedForm)
+    {
+        ActionInput.Action = selectedForm;
+        var selectedFormDefinition = AutomateFormRegistry.ActionForms.FirstOrDefault(x => x.Name == ActionInput.Action);
+        if (selectedFormDefinition is null)
+        {
+            ActionInput.Configuration = null;
+            ActionInput.FormType = null;
+        }
+        else
+        {
+            ActionInput.Configuration = ServiceProvider.GetService(selectedFormDefinition.ActionConfiguration);
+            ActionInput.FormType = selectedFormDefinition?.ActionForm;
+        }
+    }
+
+}

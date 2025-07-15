@@ -1,5 +1,7 @@
 using AutomateDot.Actions;
+using AutomateDot.Automate;
 using AutomateDot.Components;
+using AutomateDot.Components.Automation;
 using AutomateDot.Data;
 using AutomateDot.Services;
 
@@ -8,6 +10,8 @@ using Microsoft.EntityFrameworkCore;
 
 using Serilog;
 using Serilog.Events;
+
+using System.Reflection;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
@@ -48,6 +52,46 @@ try
     builder.Services.AddScoped<SendWebhookAction>();
     builder.Services.AddScoped<GotifyAction>();
     builder.Services.AddScoped<ScriptAction>();
+
+    var actionConfigurationTypes = AppDomain.CurrentDomain
+    .GetAssemblies()
+    .SelectMany(a => a.GetTypes())
+    .Where(t => typeof(IActionConfiguration).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract)
+    .ToList();
+
+    foreach (var actionConfigurationType in actionConfigurationTypes)
+    {
+        builder.Services.AddTransient(actionConfigurationType);
+    }
+
+    var formActionTypes = AppDomain.CurrentDomain
+        .GetAssemblies()
+        .SelectMany(a => a.GetTypes())
+        .Where(t =>
+            t.IsClass &&
+            !t.IsAbstract &&
+            t.BaseType is not null &&
+            t.BaseType.IsGenericType &&
+            t.BaseType.GetGenericTypeDefinition() == typeof(ActionFormBase<>)
+        )
+        .ToList();
+
+    foreach (var formActionType in formActionTypes)
+    {
+        var genericType = formActionType.BaseType?.GetGenericArguments().FirstOrDefault();
+        var existingConfigurationType = actionConfigurationTypes.FirstOrDefault(x => x == genericType);
+        if (existingConfigurationType is null)
+        {
+            Log.Warning("No matching IActionConfiguration found for {FormActionType}. Skipping registration.", formActionType.Name);
+            continue;
+        }
+
+        var actionNameAttribute = formActionType
+            .GetCustomAttribute<AutomateActionNameAttribute>();
+
+        var formName = actionNameAttribute?.Name ?? formActionType.Name;
+        AutomateFormRegistry.ActionForms.Add(new AutomateActionFormDefinition(formName, formActionType, existingConfigurationType));
+    }
 
     var app = builder.Build();
 

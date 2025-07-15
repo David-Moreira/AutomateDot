@@ -1,0 +1,6 @@
+﻿@using AutomateDot.Configurations
+@inherits ActionFormBase<SendWebhookConfiguration>
+@attribute [AutomateActionName("Send Webhook")]
+
+<EditText @bind-Value="ActionConfiguration.Url" Caption="Url" />
+<EditText @bind-Value="ActionConfiguration.Message" Caption="Message" />
