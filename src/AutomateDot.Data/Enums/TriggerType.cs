@@ -1,6 +1,6 @@
 ﻿namespace AutomateDot.Data.Enums;
 
-public enum TriggerType
+public enum Trigger
 {
     GitHubWebhook,
     AutomateDotWebhook
@@ -8,12 +8,12 @@ public enum TriggerType
 
 public static class TriggerTypeExtensions
 {
-    public static string ToFriendlyString(this TriggerType type)
+    public static string ToFriendlyString(this Trigger type)
     {
         return type switch
         {
-            TriggerType.GitHubWebhook => "GitHub Webhook",
-            TriggerType.AutomateDotWebhook => "AutomateDot Webhook",
+            Trigger.GitHubWebhook => "GitHub Webhook",
+            Trigger.AutomateDotWebhook => "AutomateDot Webhook",
             _ => throw new ArgumentOutOfRangeException(nameof(type))
         };
     }

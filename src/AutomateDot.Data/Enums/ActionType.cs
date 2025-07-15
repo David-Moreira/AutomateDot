@@ -1,6 +1,6 @@
 ﻿namespace AutomateDot.Data.Enums;
 
-public enum ActionType
+public enum Action
 {
     SendWebhook,
     Gotify,
@@ -9,13 +9,13 @@ public enum ActionType
 
 public static class ActionTypeExtensions
 {
-    public static string ToFriendlyString(this ActionType type)
+    public static string ToFriendlyString(this Action type)
     {
         return type switch
         {
-            ActionType.SendWebhook => "Send Webhook",
-            ActionType.Gotify => "Gotify",
-            ActionType.Script => "Script",
+            Action.SendWebhook => "Send Webhook",
+            Action.Gotify => "Gotify",
+            Action.Script => "Script",
             _ => throw new ArgumentOutOfRangeException(nameof(type))
         };
     }

@@ -14,8 +14,8 @@ public class AutomationExecutionService(ApplicationDbContext ApplicationDbContex
         {
             AutomationRecipeId = recipe.Id,
             Name = recipe.Name,
-            TriggerType = recipe.TriggerType,
-            ActionType = recipe.ActionType,
+            Trigger = recipe.Trigger,
+            Action = recipe.Action,
             Status = ExecutionStatus.InProgress
         });
         await ApplicationDbContext.SaveChangesAsync();

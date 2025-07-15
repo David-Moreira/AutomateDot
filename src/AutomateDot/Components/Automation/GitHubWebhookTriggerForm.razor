@@ -1,0 +1,18 @@
+﻿@using AutomateDot.Configurations  
+@inherits TriggerFormBase<GitHubWebhookTriggerConfiguration>  
+@attribute [AutomateDefinition("a7812c4c-b653-4509-9a47-77a4d89b4652", "GitHub Webhook")]
+
+<EditText @bind-Value=@TriggerConfiguration.Repository Caption="Repository" />
+<EditSelect @bind-Value="TriggerConfiguration.TriggerEvent" Caption="Event">
+    @foreach (var item in Enum.GetValues<GitHubWebhookTriggerEvent>())
+    {
+        <option value="@item">@item.ToFriendlyString()</option>
+    }
+</EditSelect>
+<Info>
+    Please configure your github webhook to: @NavigationManager.ToAbsoluteUri("api/webhook/github")
+</Info>
+
+@code{
+    [Inject] public NavigationManager NavigationManager { get; set; } = default!;
+}

@@ -53,45 +53,7 @@ try
     builder.Services.AddScoped<GotifyAction>();
     builder.Services.AddScoped<ScriptAction>();
 
-    var actionConfigurationTypes = AppDomain.CurrentDomain
-    .GetAssemblies()
-    .SelectMany(a => a.GetTypes())
-    .Where(t => typeof(IActionConfiguration).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract)
-    .ToList();
-
-    foreach (var actionConfigurationType in actionConfigurationTypes)
-    {
-        builder.Services.AddTransient(actionConfigurationType);
-    }
-
-    var formActionTypes = AppDomain.CurrentDomain
-        .GetAssemblies()
-        .SelectMany(a => a.GetTypes())
-        .Where(t =>
-            t.IsClass &&
-            !t.IsAbstract &&
-            t.BaseType is not null &&
-            t.BaseType.IsGenericType &&
-            t.BaseType.GetGenericTypeDefinition() == typeof(ActionFormBase<>)
-        )
-        .ToList();
-
-    foreach (var formActionType in formActionTypes)
-    {
-        var genericType = formActionType.BaseType?.GetGenericArguments().FirstOrDefault();
-        var existingConfigurationType = actionConfigurationTypes.FirstOrDefault(x => x == genericType);
-        if (existingConfigurationType is null)
-        {
-            Log.Warning("No matching IActionConfiguration found for {FormActionType}. Skipping registration.", formActionType.Name);
-            continue;
-        }
-
-        var actionNameAttribute = formActionType
-            .GetCustomAttribute<AutomateActionNameAttribute>();
-
-        var formName = actionNameAttribute?.Name ?? formActionType.Name;
-        AutomateFormRegistry.ActionForms.Add(new AutomateActionFormDefinition(formName, formActionType, existingConfigurationType));
-    }
+    AddAutomateServices(builder.Services);
 
     var app = builder.Build();
 
@@ -144,4 +106,89 @@ void Addlogging(WebApplicationBuilder builder)
 #endif
 
     Log.Logger = logBuilder.CreateLogger();
+}
+
+static void AddAutomateServices(IServiceCollection services)
+{
+    var actionConfigurationTypes = AppDomain.CurrentDomain
+        .GetAssemblies()
+        .SelectMany(a => a.GetTypes())
+        .Where(t => typeof(IActionConfiguration).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract)
+        .ToList();
+
+    foreach (var actionConfigurationType in actionConfigurationTypes)
+    {
+        services.AddTransient(actionConfigurationType);
+    }
+
+    var formActionTypes = AppDomain.CurrentDomain
+        .GetAssemblies()
+        .SelectMany(a => a.GetTypes())
+        .Where(t =>
+            t.IsClass &&
+            !t.IsAbstract &&
+            t.BaseType is not null &&
+            t.BaseType.IsGenericType &&
+            t.BaseType.GetGenericTypeDefinition() == typeof(ActionFormBase<>)
+        )
+        .ToList();
+
+    foreach (var formActionType in formActionTypes)
+    {
+        var genericType = formActionType.BaseType?.GetGenericArguments().FirstOrDefault();
+        var existingConfigurationType = actionConfigurationTypes.FirstOrDefault(x => x == genericType);
+        if (existingConfigurationType is null)
+        {
+            Log.Warning("No matching IActionConfiguration found for {FormActionType}. Skipping registration.", formActionType.Name);
+            continue;
+        }
+
+        var actionNameAttribute = formActionType
+            .GetCustomAttribute<AutomateDefinitionAttribute>();
+
+        var formId = actionNameAttribute?.Id ?? formActionType.AssemblyQualifiedName!;
+        var formName = actionNameAttribute?.Name ?? formActionType.Name;
+        AutomateFormRegistry.ActionForms.Add(new AutomateFormDefinition(formId, formName, formActionType, existingConfigurationType));
+    }
+
+    var triggerConfigurationTypes = AppDomain.CurrentDomain
+        .GetAssemblies()
+        .SelectMany(a => a.GetTypes())
+        .Where(t => typeof(ITriggerConfiguration).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract)
+        .ToList();
+
+    foreach (var triggerConfigurationType in triggerConfigurationTypes)
+    {
+        services.AddTransient(triggerConfigurationType);
+    }
+
+    var formTriggerTypes = AppDomain.CurrentDomain
+        .GetAssemblies()
+        .SelectMany(a => a.GetTypes())
+        .Where(t =>
+            t.IsClass &&
+            !t.IsAbstract &&
+            t.BaseType is not null &&
+            t.BaseType.IsGenericType &&
+            t.BaseType.GetGenericTypeDefinition() == typeof(TriggerFormBase<>)
+        )
+        .ToList();
+
+    foreach (var formTriggerType in formTriggerTypes)
+    {
+        var genericType = formTriggerType.BaseType?.GetGenericArguments().FirstOrDefault();
+        var existingConfigurationType = triggerConfigurationTypes.FirstOrDefault(x => x == genericType);
+        if (existingConfigurationType is null)
+        {
+            Log.Warning("No matching ITriggerConfiguration found for {FormTriggerType}. Skipping registration.", formTriggerType.Name);
+            continue;
+        }
+
+        var actionNameAttribute = formTriggerType
+            .GetCustomAttribute<AutomateDefinitionAttribute>();
+
+        var formId = actionNameAttribute?.Id ?? formTriggerType.AssemblyQualifiedName!;
+        var formName = actionNameAttribute?.Name ?? formTriggerType.Name;
+        AutomateFormRegistry.TriggerForms.Add(new AutomateFormDefinition(formId, formName, formTriggerType, existingConfigurationType));
+    }
 }

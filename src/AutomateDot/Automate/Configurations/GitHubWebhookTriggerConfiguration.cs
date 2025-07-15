@@ -1,10 +1,11 @@
-﻿using AutomateDot.Data.Enums;
+﻿using AutomateDot.Components.Automation;
+using AutomateDot.Data.Enums;
 
 using System.ComponentModel.DataAnnotations;
 
 namespace AutomateDot.Configurations;
 
-public sealed class GitHubWebhookTriggerConfiguration()
+public sealed class GitHubWebhookTriggerConfiguration : ITriggerConfiguration
 {
     [Required]
     public string Repository { get; set; } = string.Empty;

@@ -1,6 +1,5 @@
 ﻿using AutomateDot.Actions;
 using AutomateDot.Configurations;
-using AutomateDot.Data.Enums;
 using AutomateDot.Services;
 using AutomateDot.Triggers;
 
@@ -28,7 +27,7 @@ public class WebhookController : AutomateDotController
     {
         _logger.LogInformation("Github Webhook Payload {payload}", (object)payload);
 
-        var recipes = await _automationService.GetByTriggerType(TriggerType.GitHubWebhook);
+        var recipes = await _automationService.GetByTriggerId("a7812c4c-b653-4509-9a47-77a4d89b4652");
 
         foreach (var recipe in recipes)
         {
@@ -47,7 +46,7 @@ public class WebhookController : AutomateDotController
     {
         _logger.LogInformation("AutomateDot Webhook Payload {payload}", (object)payload);
 
-        var recipes = await _automationService.GetByTriggerType(TriggerType.AutomateDotWebhook);
+        var recipes = await _automationService.GetByTriggerId("e1e6e3b0-3d6c-4b31-98a3-468e2c64a0f8");
 
         foreach (var recipe in recipes)
         {
@@ -64,7 +63,7 @@ public class WebhookController : AutomateDotController
     [HttpGet()]
     public async Task<IActionResult> Get()
     {
-        var recipes = await _automationService.GetByTriggerType(TriggerType.AutomateDotWebhook);
+        var recipes = await _automationService.GetByTriggerId("e1e6e3b0-3d6c-4b31-98a3-468e2c64a0f8");
 
         foreach (var recipe in recipes)
         {

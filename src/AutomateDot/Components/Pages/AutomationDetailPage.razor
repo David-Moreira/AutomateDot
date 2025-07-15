@@ -1,4 +1,5 @@
 ﻿@page "/automates/{id:int}"
+@using AutomateDot.Components.Automation
 @using AutomateDot.Data
 @using Microsoft.EntityFrameworkCore
 
@@ -97,7 +98,7 @@
             Input = await ApplicationDbContext.AutomationRecipes.FirstAsync(x => x.Id == Id);
             
             DefinitionInput.Name = Input.Name;
-            TriggerInput.SetTriggerConfiguration(Input);
+            // TriggerInput.SetTriggerConfiguration(Input);
             // ActionInput.SetActionConfiguration(Input);
         }
         finally
@@ -148,10 +149,12 @@
                 return;
 
             Input.Name = DefinitionInput.Name;
-            Input.TriggerType = TriggerInput.TriggerType;
-            Input.TriggerConfiguration = TriggerInput.GetTriggerConfiguration();
-            // Input.ActionType = ActionInput.ActionType;
-            // Input.ActionConfiguration = ActionInput.GetActionConfiguration();
+
+            Input.Trigger = TriggerInput.Trigger ?? throw new ArgumentNullException();
+            Input.TriggerConfiguration = TriggerInput.GetConfiguration();
+
+            Input.Action = ActionInput.Action ?? throw new ArgumentNullException();
+            Input.ActionConfiguration = ActionInput.GetConfiguration();
 
             ApplicationDbContext.AutomationRecipes.Update(Input);
             await ApplicationDbContext.SaveChangesAsync();

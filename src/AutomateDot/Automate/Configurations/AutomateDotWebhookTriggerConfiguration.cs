@@ -1,7 +1,8 @@
-﻿namespace AutomateDot.Configurations;
+﻿using AutomateDot.Components.Automation;
 
-public sealed class AutomateDotWebhookTriggerConfiguration()
+namespace AutomateDot.Configurations;
+
+public sealed class AutomateDotWebhookTriggerConfiguration : ITriggerConfiguration
 {
     public string TriggerEvent { get; set; } = string.Empty;
-
 }

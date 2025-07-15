@@ -18,7 +18,7 @@ else
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Data ?? Enumerable.Empty<AutomationExecution>())
+                    @foreach (var item in Data ?? Enumerable.Empty<AutomationExecutionDto>())
                     {
                         <tr class="hover:bg-base-300" @onclick="() => GoToDetail(item)">
                             <td>
@@ -26,10 +26,10 @@ else
                                 <div class="text-xs opacity-50">@item.CreatedOn.ToLocalTime()</div>
                             </td>
                             <td>
-                                <div class="text-sm">@item.TriggerType.ToFriendlyString()</div>
+                                <div class="text-sm">@item.TriggerName</div>
                             </td>
                             <td>
-                                <div class="text-sm">@item.ActionType.ToFriendlyString()</div>
+                                <div class="text-sm">@item.ActionName</div>
                             </td>
                             <td>
                                 <div class="text-sm">@item.Status</div>
@@ -54,15 +54,15 @@ else
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Data ?? Enumerable.Empty<AutomationExecution>())
+                    @foreach (var item in Data ?? Enumerable.Empty<AutomationExecutionDto>())
                     {
                         <tr class="hover:bg-base-300" @onclick="() => GoToDetail(item)">
                             <td>
                                 <div class="font-bold">@item.Name</div>
                             </td>
                             <td>@item.CreatedOn.ToLocalTime()</td>
-                            <td>@item.TriggerType.ToFriendlyString()</td>
-                            <td>@item.ActionType.ToFriendlyString()</td>
+                            <td>@item.TriggerName</td>
+                            <td>@item.ActionName</td>
                             <td>@item.Status</td>
                         </tr>
                     }
@@ -82,13 +82,13 @@ else
 
 @code {
     [CascadingParameter] public CascadingMobileDetector CascadingMobileDetector { get; set; } = default!;
-    [EditorRequired][Parameter] public List<AutomationExecution>? Data { get; set; }
+    [EditorRequired][Parameter] public List<AutomationExecutionDto>? Data { get; set; }
     [Inject] public NavigationManager NavigationManager { get; set; } = default!;
     
     private Modal _modalRef = default!;
-    private AutomationExecution? _input;
+    private AutomationExecutionDto? _input;
 
-    public async Task GoToDetail(AutomationExecution item)
+    public async Task GoToDetail(AutomationExecutionDto item)
     {
         _input = item;
         await _modalRef.Open();

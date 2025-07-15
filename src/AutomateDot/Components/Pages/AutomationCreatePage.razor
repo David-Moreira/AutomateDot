@@ -111,9 +111,9 @@
             var newRecipe = new AutomationRecipe()
             {
                 Name = DefinitionInput.Name,
-                TriggerType = TriggerInput.TriggerType,
-                TriggerConfiguration = TriggerInput.GetTriggerConfiguration(),
-                ActionType = ActionType.SendWebhook,
+                Trigger = TriggerInput.Trigger ?? throw new ArgumentNullException(),
+                TriggerConfiguration = TriggerInput.GetConfiguration(),
+                Action = ActionInput.Action ?? throw new ArgumentNullException(),
                 ActionConfiguration = ActionInput.GetConfiguration()
             };
 

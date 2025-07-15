@@ -15,7 +15,7 @@ else
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Data ?? Enumerable.Empty<AutomationExecutionEntry>())
+                    @foreach (var item in Data ?? Enumerable.Empty<AutomationExecutionEntryDto>())
                     {
                         <tr class="hover:bg-base-300">
                             <td>
@@ -40,7 +40,7 @@ else
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Data ?? Enumerable.Empty<AutomationExecutionEntry>())
+                    @foreach (var item in Data ?? Enumerable.Empty<AutomationExecutionEntryDto>())
                     {
                         <tr class="hover:bg-base-300">
                             <td>
@@ -58,7 +58,7 @@ else
 }
 @code {
     [CascadingParameter] public CascadingMobileDetector CascadingMobileDetector { get; set; } = default!;
-    [EditorRequired][Parameter] public List<AutomationExecutionEntry>? Data { get; set; }
+    [EditorRequired][Parameter] public List<AutomationExecutionEntryDto>? Data { get; set; }
     [Inject] public NavigationManager NavigationManager { get; set; } = default!;
 
 

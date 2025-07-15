@@ -23,8 +23,9 @@ namespace AutomateDot.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("ActionType")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("AutomationRecipeId")
                         .HasColumnType("INTEGER");
@@ -39,8 +40,9 @@ namespace AutomateDot.Data.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("TriggerType")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Trigger")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("UpdatedOn")
                         .HasColumnType("TEXT");
@@ -84,12 +86,13 @@ namespace AutomateDot.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("ActionConfiguration")
+                    b.Property<string>("Action")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ActionType")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("ActionConfiguration")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("TEXT");
@@ -98,12 +101,13 @@ namespace AutomateDot.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("TriggerConfiguration")
+                    b.Property<string>("Trigger")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("TriggerType")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("TriggerConfiguration")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("UpdatedOn")
                         .HasColumnType("TEXT");

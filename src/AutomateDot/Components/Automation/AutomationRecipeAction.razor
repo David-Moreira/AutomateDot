@@ -6,7 +6,7 @@
         <option value=""></option>
         @foreach (var item in AutomateFormRegistry.ActionForms)
         {
-            <option value="@item.Name">@item.Name</option>
+            <option value="@item.Id">@item.Name</option>
         }
 </EditSelect>
 
@@ -22,7 +22,7 @@
     private void SelectedFormChanged(string selectedForm)
     {
         ActionInput.Action = selectedForm;
-        var selectedFormDefinition = AutomateFormRegistry.ActionForms.FirstOrDefault(x => x.Name == ActionInput.Action);
+        var selectedFormDefinition = AutomateFormRegistry.ActionForms.FirstOrDefault(x => x.Id == ActionInput.Action);
         if (selectedFormDefinition is null)
         {
             ActionInput.Configuration = null;
@@ -30,8 +30,8 @@
         }
         else
         {
-            ActionInput.Configuration = ServiceProvider.GetService(selectedFormDefinition.ActionConfiguration);
-            ActionInput.FormType = selectedFormDefinition?.ActionForm;
+            ActionInput.Configuration = ServiceProvider.GetService(selectedFormDefinition.ConfigurationType);
+            ActionInput.FormType = selectedFormDefinition?.FormType;
         }
     }
 

@@ -2,13 +2,14 @@ namespace AutomateDot.Automate;
 
 public static class AutomateFormRegistry
 {
-    public static readonly Dictionary<string, Type> TriggerForms = new();
-    public static readonly List<AutomateActionFormDefinition> ActionForms = new();
+    public static readonly List<AutomateFormDefinition> TriggerForms = new();
+    public static readonly List<AutomateFormDefinition> ActionForms = new();
 }
 
-public sealed class AutomateActionFormDefinition(string Name, Type ActionForm, Type ActionConfiguration)
+public sealed class AutomateFormDefinition(string Id, string Name, Type Form, Type Configuration)
 {
+    public string Id { get; } = Id;
     public string Name { get; } = Name;
-    public Type ActionForm { get; } = ActionForm;
-    public Type ActionConfiguration { get; } = ActionConfiguration;
+    public Type FormType { get; } = Form;
+    public Type ConfigurationType { get; } = Configuration;
 }
