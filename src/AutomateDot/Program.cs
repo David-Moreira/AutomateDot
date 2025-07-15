@@ -121,6 +121,23 @@ static void AddAutomateServices(IServiceCollection services)
         services.AddTransient(actionConfigurationType);
     }
 
+    var actionHandlerTypes = AppDomain.CurrentDomain
+        .GetAssemblies()
+        .SelectMany(a => a.GetTypes())
+        .Where(t =>
+            t.IsClass &&
+            !t.IsAbstract &&
+            t.GetInterfaces().Any(i =>
+                i.IsGenericType &&
+                i.GetGenericTypeDefinition() == typeof(IActionHandler<>)
+            ))
+        .ToList();
+
+    foreach (var actionHandlerType in actionHandlerTypes)
+    {
+        services.AddTransient(actionHandlerType);
+    }
+
     var formActionTypes = AppDomain.CurrentDomain
         .GetAssemblies()
         .SelectMany(a => a.GetTypes())
@@ -143,12 +160,22 @@ static void AddAutomateServices(IServiceCollection services)
             continue;
         }
 
+        var existingActionHandlerType = actionHandlerTypes.FirstOrDefault(x =>
+            x.GetInterfaces().Any(
+                y => y.IsGenericType && y.GetGenericTypeDefinition() == typeof(IActionHandler<>)
+                && y.GetGenericArguments()[0] == genericType));
+        if (existingActionHandlerType is null)
+        {
+            Log.Warning("No matching IActionHandler found for {FormActionType}. Skipping registration.", formActionType.Name);
+            continue;
+        }
+
         var actionNameAttribute = formActionType
             .GetCustomAttribute<AutomateDefinitionAttribute>();
 
         var formId = actionNameAttribute?.Id ?? formActionType.AssemblyQualifiedName!;
         var formName = actionNameAttribute?.Name ?? formActionType.Name;
-        AutomateFormRegistry.ActionForms.Add(new AutomateFormDefinition(formId, formName, formActionType, existingConfigurationType));
+        AutomateFormRegistry.ActionForms.Add(new AutomateFormDefinition(formId, formName, formActionType, existingConfigurationType, existingActionHandlerType));
     }
 
     var triggerConfigurationTypes = AppDomain.CurrentDomain
@@ -189,6 +216,6 @@ static void AddAutomateServices(IServiceCollection services)
 
         var formId = actionNameAttribute?.Id ?? formTriggerType.AssemblyQualifiedName!;
         var formName = actionNameAttribute?.Name ?? formTriggerType.Name;
-        AutomateFormRegistry.TriggerForms.Add(new AutomateFormDefinition(formId, formName, formTriggerType, existingConfigurationType));
+        AutomateFormRegistry.TriggerForms.Add(new AutomateFormDefinition(formId, formName, formTriggerType, existingConfigurationType, null));
     }
 }

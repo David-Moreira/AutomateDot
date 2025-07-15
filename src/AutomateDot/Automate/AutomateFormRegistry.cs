@@ -6,10 +6,11 @@ public static class AutomateFormRegistry
     public static readonly List<AutomateFormDefinition> ActionForms = new();
 }
 
-public sealed class AutomateFormDefinition(string Id, string Name, Type Form, Type Configuration)
+public sealed class AutomateFormDefinition(string Id, string Name, Type Form, Type Configuration, Type? Handler)
 {
     public string Id { get; } = Id;
     public string Name { get; } = Name;
     public Type FormType { get; } = Form;
     public Type ConfigurationType { get; } = Configuration;
+    public Type? Handler { get; } = Handler;
 }

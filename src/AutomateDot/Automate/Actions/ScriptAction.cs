@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace AutomateDot.Actions;
 
-public sealed class ScriptAction(ILogger<ScriptAction> Logger)
+public sealed class ScriptAction(ILogger<ScriptAction> Logger) : IActionHandler<ScriptConfiguration>
 {
     public Task ExecuteAsync(ScriptConfiguration configuration)
     {

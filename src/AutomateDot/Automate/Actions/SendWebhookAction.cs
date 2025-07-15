@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AutomateDot.Actions;
 
-public sealed class SendWebhookAction(IHttpClientFactory HttpClientFactory)
+public sealed class SendWebhookAction(IHttpClientFactory HttpClientFactory) : IActionHandler<SendWebhookConfiguration>
 {
     public async Task ExecuteAsync(SendWebhookConfiguration configuration)
     {

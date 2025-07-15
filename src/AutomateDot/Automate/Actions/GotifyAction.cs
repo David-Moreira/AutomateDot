@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace AutomateDot.Actions;
 
-public sealed class GotifyAction(IHttpClientFactory HttpClientFactory)
+public sealed class GotifyAction(IHttpClientFactory HttpClientFactory) : IActionHandler<GotifyConfiguration>
 {
     public async Task ExecuteAsync(GotifyConfiguration configuration)
     {
