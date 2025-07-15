@@ -59,4 +59,5 @@ nunit-*.xml
 .ntvs_analysis.dat
 node_modules/
 
-*.db
+*.db**
+
