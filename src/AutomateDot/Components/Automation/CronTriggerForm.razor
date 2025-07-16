@@ -1,6 +1,6 @@
 @using AutomateDot.Configurations
 @inherits TriggerFormBase<CronTriggerConfiguration>
-@attribute [AutomateDefinition(AutomateDot.Automate.Constants.Triggers.CRON, "Cron Schedule")]
+@attribute [AutomateDefinition(Triggers.CRON, "Cron Schedule")]
 
 <EditText @bind-Value="TriggerConfiguration.CronExpression" Caption="Cron Expression" />
 <EditText @bind-Value="TriggerConfiguration.Description" Caption="Description (optional)" />

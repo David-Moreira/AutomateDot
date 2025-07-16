@@ -29,6 +29,14 @@ else
                             <td>
                                 <div class="text-sm">@item.ActionName</div>
                             </td>
+                            @if (item.Trigger == Triggers.MANUAL)
+                            {
+                                <td @onclick:preventDefault @onclick:stopPropagation>
+                                    <button @onclick="@(async () => await ManualTrigger(item))" class="float-right btn btn-primary">
+                                        Trigger
+                                    </button>
+                                </td>
+                            }
                         </tr>
                     }
                 </tbody>
@@ -54,7 +62,17 @@ else
                                 <div class="font-bold">@item.Name</div>
                             </td>
                             <td>@item.TriggerName</td>
-                            <td>@item.ActionName</td>
+                            <td>
+                                @item.ActionName
+                            </td>
+                            @if (item.Trigger == Triggers.MANUAL)
+                            {
+                                <td @onclick:preventDefault @onclick:stopPropagation>
+                                    <button @onclick="@(async () => await ManualTrigger(item))" class="float-right btn btn-primary">
+                                        Trigger
+                                    </button>
+                                </td>
+                            }
                         </tr>
                     }
                 </tbody>
@@ -66,10 +84,16 @@ else
     [CascadingParameter] public CascadingMobileDetector CascadingMobileDetector { get; set; } = default!;
     [EditorRequired][Parameter] public List<AutomationRecipeDto>? Data { get; set; }
     [Inject] public NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] public AutomationService AutomationService { get; set; } = default!;
 
 
     public void GoToDetail(AutomationRecipeDto item)
     {
         NavigationManager.NavigateTo($"/automates/{item.Id}");
+    }
+
+    public async Task ManualTrigger(AutomationRecipeDto item)
+    {
+        await AutomationService.ExecuteRecipeAction(item.Id);
     }
 }

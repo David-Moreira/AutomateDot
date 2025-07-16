@@ -1,6 +1,6 @@
 ﻿@using AutomateDot.Configurations  
 @inherits TriggerFormBase<GitHubWebhookTriggerConfiguration>  
-@attribute [AutomateDefinition("a7812c4c-b653-4509-9a47-77a4d89b4652", "GitHub Webhook")]
+@attribute [AutomateDefinition(Triggers.GITHUB, "GitHub Webhook")]
 
 <EditText @bind-Value=@TriggerConfiguration.Repository Caption="Repository" />
 <EditSelect @bind-Value="TriggerConfiguration.TriggerEvent" Caption="Event">

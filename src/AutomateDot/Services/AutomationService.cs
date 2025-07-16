@@ -36,12 +36,12 @@ public class AutomationService(ApplicationDbContext ApplicationDbContext, Action
         await ApplicationDbContext.AddAsync(recipe);
         await ApplicationDbContext.SaveChangesAsync();
 
-        if (recipe.Trigger == AutomateDot.Automate.Constants.Triggers.CRON)
+        if (recipe.Trigger == Constants.Triggers.CRON)
         {
             //Hard coded for now, but should be configurable per Form,
             //allowing access to Hangfire for scheduling
             var definition = AutomateFormRegistry.
-                TriggerForms.FirstOrDefault(x => x.Id == AutomateDot.Automate.Constants.Triggers.CRON);
+                TriggerForms.FirstOrDefault(x => x.Id == Constants.Triggers.CRON);
             if (definition is not null)
             {
                 var configuration =
@@ -60,12 +60,12 @@ public class AutomationService(ApplicationDbContext ApplicationDbContext, Action
         ApplicationDbContext.AutomationRecipes.Update(recipe);
         await ApplicationDbContext.SaveChangesAsync();
 
-        if (recipe.Trigger == AutomateDot.Automate.Constants.Triggers.CRON)
+        if (recipe.Trigger == Constants.Triggers.CRON)
         {
             //Hard coded for now, but should be configurable per Form,
             //allowing access to Hangfire for scheduling
             var definition = AutomateFormRegistry.
-                TriggerForms.FirstOrDefault(x => x.Id == AutomateDot.Automate.Constants.Triggers.CRON);
+                TriggerForms.FirstOrDefault(x => x.Id == Constants.Triggers.CRON);
             if (definition is not null)
             {
                 var configuration =

@@ -1,6 +1,6 @@
 ﻿@using AutomateDot.Configurations  
 @inherits TriggerFormBase<AutomateDotWebhookTriggerConfiguration>  
-@attribute [AutomateDefinition("e1e6e3b0-3d6c-4b31-98a3-468e2c64a0f8", "AutomateDot Webhook")]
+@attribute [AutomateDefinition(Triggers.AUTOMATEDOT, "AutomateDot Webhook")]
 
 <EditText @bind-Value=@TriggerConfiguration.TriggerEvent Caption="Event" />
 <Info>
