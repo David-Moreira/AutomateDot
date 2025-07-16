@@ -1,8 +1,11 @@
 ﻿@using System.Linq.Expressions
 @typeparam TValue
 
-<fieldset class="fieldset" >
-    <legend class="fieldset-legend">@Caption</legend>
+<fieldset class="fieldset">
+    @if (!string.IsNullOrEmpty(Caption))
+    {
+        <legend class="fieldset-legend">@Caption</legend>
+    }
     <InputDate Value="@Value" ValueChanged="@ValueChanged" ValueExpression="@ValueExpression" class="input w-full" @attributes="@AdditionalAttributes" />
     <ValidationMessage For="@ValueExpression" />
 </fieldset>
@@ -13,11 +16,11 @@
     [Parameter] public EventCallback<TValue?> ValueChanged { get; set; }
     [Parameter] public Expression<Func<TValue?>>? ValueExpression { get; set; }
 
-    [Parameter( CaptureUnmatchedValues = true )] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
     protected override void OnInitialized()
     {
-        if ( ValueExpression is null )
+        if (ValueExpression is null)
         {
             ValueExpression = () => Value;
         }

@@ -1,5 +1,7 @@
-﻿using AutomateDot.Components.Automation;
+﻿using AutomateDot.Components.Automation.Triggers;
 using AutomateDot.Data.Enums;
+using AutomateDot.Payloads;
+using AutomateDot.Payloads.GitHub;
 
 using System.ComponentModel.DataAnnotations;
 
@@ -23,4 +25,36 @@ public sealed class GitHubWebhookTriggerConfiguration : ITriggerConfiguration
         };
 
     public GitHubWebhookTriggerEvent TriggerEvent { get; set; }
+
+    public Dictionary<string, string> GetPayloadFields()
+    {
+        switch (TriggerEvent)
+        {
+            case GitHubWebhookTriggerEvent.CreateBranch:
+                return PayloadFieldHelper.GetFlattenedFields<GithubCreateEventPayload>().ToDictionary(x => x, x => x);
+
+            case GitHubWebhookTriggerEvent.DeleteBranch:
+                return PayloadFieldHelper.GetFlattenedFields<GithubDeleteEventPayload>().ToDictionary(x => x, x => x);
+
+            case GitHubWebhookTriggerEvent.CreateTag:
+                return PayloadFieldHelper.GetFlattenedFields<GithubCreateEventPayload>().ToDictionary(x => x, x => x);
+
+            case GitHubWebhookTriggerEvent.DeleteTag:
+                return PayloadFieldHelper.GetFlattenedFields<GithubDeleteEventPayload>().ToDictionary(x => x, x => x);
+
+            case GitHubWebhookTriggerEvent.Released:
+                return PayloadFieldHelper.GetFlattenedFields<GithubReleaseEventPayload>().ToDictionary(x => x, x => x);
+
+            case GitHubWebhookTriggerEvent.NewIssue:
+                return PayloadFieldHelper.GetFlattenedFields<GithubIssuesEventPayload>().ToDictionary(x => x, x => x);
+
+            case GitHubWebhookTriggerEvent.NewPullRequest:
+                return PayloadFieldHelper.GetFlattenedFields<GithubPullRequestEventPayload>().ToDictionary(x => x, x => x);
+
+            default:
+                break;
+        }
+
+        return new();
+    }
 }

@@ -2,6 +2,8 @@ using AutomateDot.Actions;
 using AutomateDot.Automate;
 using AutomateDot.Components;
 using AutomateDot.Components.Automation;
+using AutomateDot.Components.Automation.Actions;
+using AutomateDot.Components.Automation.Triggers;
 using AutomateDot.Data;
 using AutomateDot.Services;
 

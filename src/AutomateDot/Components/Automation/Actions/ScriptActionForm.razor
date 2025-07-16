@@ -3,4 +3,5 @@
 @attribute [AutomateDefinition("ae2c0f6c-85d1-4df6-9112-d14e95897c4f", "Script")] 
 
 <EditText @bind-Value="ActionConfiguration.File" Caption="File" />  
-<EditText @bind-Value="ActionConfiguration.Arguments" Caption="Arguments" />
+<EditTextArea @bind-Value="ActionConfiguration.Arguments" Caption="Arguments" />
+<PayloadFieldSelectInput PayloadFields="GetPayloadFields()" @bind-Message="@ActionConfiguration.Arguments"></PayloadFieldSelectInput>

@@ -2,7 +2,10 @@
 @typeparam TValue
 
 <fieldset class="fieldset" >
-    <legend class="fieldset-legend">@Caption</legend>
+    @if (!string.IsNullOrEmpty(Caption))
+    {
+        <legend class="fieldset-legend">@Caption</legend>
+    }
     <InputSelect TValue="TValue" Value="@Value" ValueChanged="@ValueChanged" ValueExpression="@ValueExpression" class="select w-full" @attributes="@AdditionalAttributes">
         @ChildContent
     </InputSelect>

@@ -1,4 +1,4 @@
-﻿using AutomateDot.Components.Automation;
+﻿using AutomateDot.Components.Automation.Actions;
 
 using System.ComponentModel.DataAnnotations;
 

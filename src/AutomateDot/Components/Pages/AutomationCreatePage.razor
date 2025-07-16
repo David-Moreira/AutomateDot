@@ -1,5 +1,6 @@
 ﻿@page "/automates/create"
-@using AutomateDot.Components.Automation
+@using AutomateDot.Components.Automation.Triggers
+@using AutomateDot.Components.Automation.Actions
 
 <PageContainer>
     <TitleContent>
@@ -51,7 +52,7 @@
             <EditForm Model="ActionInput" OnValidSubmit="OnValidSubmitAsync" method="post" class="space-y-2">
                 <ObjectGraphDataAnnotationsValidator />
 
-                <AutomationRecipeAction ActionInput="ActionInput" />
+                <AutomationRecipeAction ActionInput="ActionInput" TriggerInput="TriggerInput" />
 
                 <AlertError Message="@_error" />
 

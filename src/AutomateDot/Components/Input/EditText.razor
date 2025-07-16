@@ -1,7 +1,10 @@
 ﻿@using System.Linq.Expressions
 
 <fieldset class="fieldset" >
-    <legend class="fieldset-legend">@Caption</legend>
+    @if (!string.IsNullOrEmpty(Caption))
+    {
+        <legend class="fieldset-legend">@Caption</legend>
+    }
     <InputText Value="@Value" ValueChanged="@ValueChanged" ValueExpression="@ValueExpression" class="input w-full" @attributes="@AdditionalAttributes" />
     @if ( ValueExpression is not null )
     {

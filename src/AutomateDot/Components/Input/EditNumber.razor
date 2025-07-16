@@ -2,7 +2,10 @@
 @typeparam TValue
 
 <fieldset class=@($"fieldset {ContainerClass}") >
-    <legend class="fieldset-legend">@Caption</legend>
+    @if (!string.IsNullOrEmpty(Caption))
+    {
+        <legend class="fieldset-legend">@Caption</legend>
+    }
     <InputNumber Value="@Value" ValueChanged="@ValueChanged" ValueExpression="@ValueExpression" class="input w-full" @attributes="@AdditionalAttributes" />
     <ValidationMessage For="@ValueExpression" />
 </fieldset>

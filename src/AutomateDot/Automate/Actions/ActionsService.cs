@@ -1,5 +1,5 @@
 ﻿using AutomateDot.Automate;
-using AutomateDot.Components.Automation;
+using AutomateDot.Components.Automation.Actions;
 using AutomateDot.Data.Entities;
 using AutomateDot.Data.Enums;
 using AutomateDot.Services;

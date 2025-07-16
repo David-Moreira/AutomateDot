@@ -1,4 +1,4 @@
-﻿using AutomateDot.Components.Automation;
+﻿using AutomateDot.Components.Automation.Triggers;
 
 namespace AutomateDot.Configurations;
 

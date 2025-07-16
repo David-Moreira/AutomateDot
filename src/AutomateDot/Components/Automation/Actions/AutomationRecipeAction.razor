@@ -12,12 +12,16 @@
 
 @if (ActionInput.FormType is not null && ActionInput.Configuration is not null)
     {
-    <DynamicComponent Type="@ActionInput.FormType" Parameters="@(new Dictionary<string, object> { ["ActionConfiguration"] = ActionInput.Configuration })" />
+    <DynamicComponent Type="@ActionInput.FormType" Parameters="@(new Dictionary<string, object> { 
+        ["ActionConfiguration"] = ActionInput.Configuration!,
+        ["TriggerConfiguration"] = TriggerInput.Configuration!
+    })"/>
     }
 
 @code {
     [Inject] public IServiceProvider ServiceProvider { get; set; } = default!;
-    [Parameter] public AutomationRecipeActionDto ActionInput { get; set; } = new();
+    [EditorRequired][Parameter] public AutomationRecipeActionDto ActionInput { get; set; } = new();
+    [EditorRequired][Parameter] public AutomationRecipeTriggerDto TriggerInput { get; set; } = new();
 
     private void SelectedFormChanged(string selectedForm)
     {

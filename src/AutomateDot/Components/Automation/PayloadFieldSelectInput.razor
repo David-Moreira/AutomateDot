@@ -1,0 +1,23 @@
+﻿@if (PayloadFields.Count > 0)
+{
+    <EditSelect TValue="string" ValueChanged="OnFieldSelected">
+        <option value="">-- Insert field --</option>
+        @foreach (var field in PayloadFields)
+        {
+            <option value="@field.Key">@field.Value</option>
+        }
+    </EditSelect>
+}
+@code {
+    [Parameter] public Dictionary<string, string> PayloadFields { get; set; } = new();
+    [Parameter] public string Message { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> MessageChanged { get; set; } 
+    private async Task OnFieldSelected(string value)
+    {
+        if (!string.IsNullOrEmpty(value))
+        {
+            Message += $"{{{{{value}}}}} ";
+            await MessageChanged.InvokeAsync(Message);
+        }
+    }
+}
