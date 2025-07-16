@@ -94,6 +94,6 @@ else
 
     public async Task ManualTrigger(AutomationRecipeDto item)
     {
-        await AutomationService.ExecuteRecipeAction(item.Id);
+        await AutomationService.ExecuteAction(item.Id);
     }
 }

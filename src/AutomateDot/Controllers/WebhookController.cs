@@ -1,5 +1,4 @@
-﻿using AutomateDot.Actions;
-using AutomateDot.Configurations;
+﻿using AutomateDot.Configurations;
 using AutomateDot.Services;
 using AutomateDot.Triggers;
 
@@ -12,13 +11,11 @@ namespace AutomateDot.Controllers;
 public class WebhookController : AutomateDotController
 {
     private readonly AutomationService _automationService;
-    private readonly ActionsService _actionsService;
     private readonly ILogger<WebhookController> _logger;
 
-    public WebhookController(ILogger<WebhookController> logger, ActionsService actionsService, AutomationService automationService)
+    public WebhookController(ILogger<WebhookController> logger, AutomationService automationService)
     {
         _logger = logger;
-        _actionsService = actionsService;
         _automationService = automationService;
     }
 
@@ -35,7 +32,7 @@ public class WebhookController : AutomateDotController
             if (!await GitHubWebhookTrigger.ShouldTrigger(this.Request, config!))
                 return Ok();
 
-            await _actionsService.Execute(recipe);
+            await _automationService.ExecuteAction(recipe);
         }
 
         return Ok();
@@ -54,7 +51,7 @@ public class WebhookController : AutomateDotController
             if (!AutomateDotWebhookTrigger.ShouldTrigger(this.Request, config!))
                 return Ok();
 
-            await _actionsService.Execute(recipe);
+            await _automationService.ExecuteAction(recipe);
         }
 
         return Ok();
@@ -71,7 +68,7 @@ public class WebhookController : AutomateDotController
             if (!AutomateDotWebhookTrigger.ShouldTrigger(this.Request, config!))
                 return Ok();
 
-            await _actionsService.Execute(recipe);
+            await _automationService.ExecuteAction(recipe);
         }
 
         return Ok();
