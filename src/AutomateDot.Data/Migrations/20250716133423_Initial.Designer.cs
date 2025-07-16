@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AutomateDot.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250715223920_Initial")]
+    [Migration("20250716133423_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -99,6 +99,9 @@ namespace AutomateDot.Data.Migrations
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()

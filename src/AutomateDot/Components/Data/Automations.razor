@@ -14,6 +14,7 @@ else
                         <th>Name</th>
                         <th>Trigger</th>
                         <th>Action</th>
+                        <th>Active</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -29,7 +30,8 @@ else
                             <td>
                                 <div class="text-sm">@item.ActionName</div>
                             </td>
-                            @if (item.Trigger == Triggers.MANUAL)
+                            <td><input type="checkbox" class="checkbox [--chkfg:green]" disabled checked="@item.IsActive" style="opacity:100" /></td>
+                            @if (item.Trigger == Triggers.MANUAL && item.IsActive)
                             {
                                 <td @onclick:preventDefault @onclick:stopPropagation>
                                     <button @onclick="@(async () => await ManualTrigger(item))" class="float-right btn btn-primary">
@@ -55,6 +57,7 @@ else
                         <th>Name</th>
                         <th>Trigger</th>
                         <th>Action</th>
+                        <th>Active</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -68,7 +71,8 @@ else
                             <td>
                                 @item.ActionName
                             </td>
-                            @if (item.Trigger == Triggers.MANUAL)
+                            <td><input type="checkbox" class="checkbox [--chkfg:green]" disabled checked="@item.IsActive" style="opacity:100" /></td>
+                            @if (item.Trigger == Triggers.MANUAL && item.IsActive)
                             {
                                 <td @onclick:preventDefault @onclick:stopPropagation>
                                     <button @onclick="@(async () => await ManualTrigger(item))" class="float-right btn btn-primary">
@@ -102,7 +106,7 @@ else
 
     public bool HasManualTrigger()
     {
-        return (Data ?? Enumerable.Empty<AutomationRecipeDto>()).Any(x => x.Trigger == Triggers.MANUAL);
+        return (Data ?? Enumerable.Empty<AutomationRecipeDto>()).Any(x => x.Trigger == Triggers.MANUAL && x.IsActive);
     }
 
     public void GoToDetail(AutomationRecipeDto item)

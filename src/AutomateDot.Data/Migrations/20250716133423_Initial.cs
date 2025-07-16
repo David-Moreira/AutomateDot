@@ -18,6 +18,7 @@ namespace AutomateDot.Data.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
                     Trigger = table.Column<string>(type: "TEXT", nullable: false),
                     Action = table.Column<string>(type: "TEXT", nullable: false),
                     TriggerConfiguration = table.Column<string>(type: "TEXT", nullable: false),

@@ -64,13 +64,15 @@ public class AutomationRecipeDefinitionDto
 {
     [Required]
     public string Name { get; set; } = string.Empty;
+
+    public bool IsActive { get; set; } = true;
 }
 
 public class AutomationRecipeDto
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
-
+    public bool IsActive { get; set; }
     public string Trigger { get; set; } = string.Empty;
     public string Action { get; set; } = string.Empty;
 

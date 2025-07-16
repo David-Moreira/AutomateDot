@@ -12,9 +12,9 @@ namespace AutomateDot.Services;
 
 public class AutomationService(ApplicationDbContext ApplicationDbContext, ActionsService ActionsService, ILogger<AutomationService> Logger)
 {
-    public async Task<AutomationRecipe> Get(int id)
+    public async Task<AutomationRecipe?> Get(int id)
     {
-        return await ApplicationDbContext.AutomationRecipes.FirstAsync(x => x.Id == id);
+        return await ApplicationDbContext.AutomationRecipes.FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<List<AutomationRecipe>> GetAll()
@@ -36,7 +36,7 @@ public class AutomationService(ApplicationDbContext ApplicationDbContext, Action
         await ApplicationDbContext.AddAsync(recipe);
         await ApplicationDbContext.SaveChangesAsync();
 
-        if (recipe.Trigger == Constants.Triggers.CRON)
+        if (recipe.Trigger == Constants.Triggers.CRON && recipe.IsActive)
         {
             //Hard coded for now, but should be configurable per Form,
             //allowing access to Hangfire for scheduling
@@ -60,7 +60,7 @@ public class AutomationService(ApplicationDbContext ApplicationDbContext, Action
         ApplicationDbContext.AutomationRecipes.Update(recipe);
         await ApplicationDbContext.SaveChangesAsync();
 
-        if (recipe.Trigger == Constants.Triggers.CRON)
+        if (recipe.Trigger == Constants.Triggers.CRON && recipe.IsActive)
         {
             //Hard coded for now, but should be configurable per Form,
             //allowing access to Hangfire for scheduling

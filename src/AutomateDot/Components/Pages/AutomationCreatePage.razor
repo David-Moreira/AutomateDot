@@ -18,10 +18,12 @@
                 <ObjectGraphDataAnnotationsValidator />
 
                 <EditText @bind-Value=@DefinitionInput.Name Caption="Name" />
+                <EditCheckbox @bind-Value="DefinitionInput.IsActive" Caption="Active"></EditCheckbox>
 
                 <AlertError Message="@_error" />
 
                 <div class="float-right">
+                    <input type="button" @onclick="OnCancel" class="btn" value="Cancel" />
                     <input type="submit" class="btn btn-primary" value="Next" />
                 </div>
 
@@ -37,6 +39,7 @@
                 <AlertError Message="@_error" />
 
                 <div class="float-right">
+                    <input type="button" @onclick="OnCancel" class="btn" value="Cancel" />
                     <input type="button" class="btn btn-secondary" value="Back" onclick="@Back" />
                     <input type="submit" class="btn btn-primary" value="Next" />
                 </div>
@@ -53,6 +56,7 @@
                 <AlertError Message="@_error" />
 
                 <div class="float-right">
+                    <input type="button" @onclick="OnCancel" class="btn" value="Cancel" />
                     <input type="button" class="btn btn-secondary" value="Back" onclick="@Back" />
                     <input type="submit" class="btn btn-primary" value="Create" />
                 </div>
@@ -94,6 +98,11 @@
         return Task.CompletedTask;
     }
 
+    private void OnCancel()
+    {
+        NavigationManager.NavigateTo("/automates");
+    }
+
     private async Task OnValidSubmitAsync()
     {
         try
@@ -110,6 +119,7 @@
             var newRecipe = new AutomationRecipe()
             {
                 Name = DefinitionInput.Name,
+                IsActive = DefinitionInput.IsActive,
                 Trigger = TriggerInput.Trigger ?? throw new ArgumentNullException(),
                 TriggerConfiguration = TriggerInput.GetConfiguration(),
                 Action = ActionInput.Action ?? throw new ArgumentNullException(),
