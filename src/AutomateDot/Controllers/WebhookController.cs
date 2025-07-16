@@ -20,28 +20,28 @@ public class WebhookController : AutomateDotController
     }
 
     [HttpPost("github")]
-    public async Task<IActionResult> Github([FromBody] dynamic payload)
+    public async Task<IActionResult> Github([FromBody] object payload)
     {
-        _logger.LogInformation("Github Webhook Payload {payload}", (object)payload);
+        _logger.LogInformation("Github Webhook Payload {payload}", payload);
 
         var recipes = await _automationService.GetByTriggerId(Constants.Triggers.GITHUB);
 
         foreach (var recipe in recipes)
         {
             var config = System.Text.Json.JsonSerializer.Deserialize<GitHubWebhookTriggerConfiguration>(recipe.TriggerConfiguration);
-            if (!await GitHubWebhookTrigger.ShouldTrigger(this.Request, config!))
+            if (!GitHubWebhookTrigger.ShouldTrigger(this.Request, config!, payload))
                 return Ok();
 
-            await _automationService.ExecuteAction(recipe);
+            await _automationService.ExecuteAction(recipe, payload);
         }
 
         return Ok();
     }
 
     [HttpPost()]
-    public async Task<IActionResult> Post([FromBody] dynamic payload)
+    public async Task<IActionResult> Post([FromBody] object payload)
     {
-        _logger.LogInformation("AutomateDot Webhook Payload {payload}", (object)payload);
+        _logger.LogInformation("AutomateDot Webhook Payload {payload}", payload);
 
         var recipes = await _automationService.GetByTriggerId(Constants.Triggers.AUTOMATEDOT);
 
@@ -51,7 +51,7 @@ public class WebhookController : AutomateDotController
             if (!AutomateDotWebhookTrigger.ShouldTrigger(this.Request, config!))
                 return Ok();
 
-            await _automationService.ExecuteAction(recipe);
+            await _automationService.ExecuteAction(recipe, payload);
         }
 
         return Ok();

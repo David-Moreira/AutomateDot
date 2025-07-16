@@ -6,13 +6,13 @@ namespace AutomateDot.Actions;
 
 public sealed class ScriptAction(ILogger<ScriptAction> Logger) : IActionHandler<ScriptConfiguration>
 {
-    public Task ExecuteAsync(ScriptConfiguration configuration)
+    public Task ExecuteAsync(ScriptConfiguration configuration, object? triggerPayload = null)
     {
         Logger.LogInformation("ScriptAction starting new process");
 
         var process = new Process();
-        process.StartInfo.FileName = configuration.File;
-        process.StartInfo.Arguments = configuration.Arguments;
+        process.StartInfo.FileName = ActionHelper.ReplacePlaceholders(configuration.File, triggerPayload);
+        process.StartInfo.Arguments = ActionHelper.ReplacePlaceholders(configuration.Arguments, triggerPayload);
 
         process.StartInfo.UseShellExecute = false;
         process.StartInfo.RedirectStandardOutput = true;

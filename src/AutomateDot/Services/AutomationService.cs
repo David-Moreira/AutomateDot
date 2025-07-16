@@ -1,6 +1,5 @@
 ﻿using AutomateDot.Actions;
 using AutomateDot.Automate;
-using AutomateDot.Automate.Configurations;
 using AutomateDot.Configurations;
 using AutomateDot.Data;
 using AutomateDot.Data.Entities;
@@ -51,7 +50,7 @@ public class AutomationService(ApplicationDbContext ApplicationDbContext, Action
 
                 RecurringJob.AddOrUpdate<AutomationService>(
                 recipe.Id.ToString(),
-                x => x.ExecuteAction(recipe.Id), configuration!.CronExpression);
+                x => x.ExecuteAction(recipe.Id, null), configuration!.CronExpression);
             }
         }
     }
@@ -75,7 +74,7 @@ public class AutomationService(ApplicationDbContext ApplicationDbContext, Action
 
                 RecurringJob.AddOrUpdate<AutomationService>(
                 recipe.Id.ToString(),
-                x => x.ExecuteAction(recipe.Id), configuration!.CronExpression);
+                x => x.ExecuteAction(recipe.Id, null), configuration!.CronExpression);
             }
         }
         else
@@ -84,7 +83,7 @@ public class AutomationService(ApplicationDbContext ApplicationDbContext, Action
         }
     }
 
-    public async Task ExecuteAction(int id)
+    public async Task ExecuteAction(int id, object? triggerPayload = null)
     {
         var recipe = await ApplicationDbContext
             .AutomationRecipes.FirstOrDefaultAsync(x => x.Id == id);
@@ -95,12 +94,12 @@ public class AutomationService(ApplicationDbContext ApplicationDbContext, Action
             return;
         }
 
-        await ExecuteAction(recipe);
+        await ExecuteAction(recipe, triggerPayload);
     }
 
-    public async Task ExecuteAction(AutomationRecipe recipe)
+    public async Task ExecuteAction(AutomationRecipe recipe, object? triggerPayload = null)
     {
-        await ActionsService.Execute(recipe);
+        await ActionsService.Execute(recipe, triggerPayload);
     }
 }
 

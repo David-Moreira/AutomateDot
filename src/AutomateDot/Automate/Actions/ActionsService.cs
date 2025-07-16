@@ -6,14 +6,9 @@ using AutomateDot.Services;
 
 namespace AutomateDot.Actions;
 
-public interface IActionHandler<in T> where T : IActionConfiguration
-{
-    Task ExecuteAsync(T config);
-}
-
 public class ActionsService(AutomationExecutionService AutomationExecutionService, ILogger<ActionsService> Logger, IServiceProvider ServiceProvider)
 {
-    public async Task Execute(AutomationRecipe recipe)
+    public async Task Execute(AutomationRecipe recipe, object? triggerPayload = null)
     {
         var executionId = await AutomationExecutionService.StartExecution(recipe);
 
@@ -37,11 +32,11 @@ public class ActionsService(AutomationExecutionService AutomationExecutionServic
             var actionHandler =
                 ServiceProvider.GetRequiredService(definition.Handler!);
 
-            var method = actionHandler.GetType().GetMethod("ExecuteAsync", [definition.ConfigurationType]);
+            var method = actionHandler.GetType().GetMethod("ExecuteAsync", [definition.ConfigurationType, typeof(object)]);
 
             if (method is not null && actionConfiguration is not null)
             {
-                var task = (Task)method.Invoke(actionHandler, [actionConfiguration])!;
+                var task = (Task)method.Invoke(actionHandler, [actionConfiguration, triggerPayload])!;
                 await task;
             }
             else

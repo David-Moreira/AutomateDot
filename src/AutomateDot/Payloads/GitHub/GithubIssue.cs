@@ -1,8 +1,10 @@
-﻿namespace AutomateDot.Payloads.GitHub;
+﻿#nullable disable
+
+namespace AutomateDot.Payloads.GitHub;
 
 public class GithubIssue
 {
-    public int Id { get; set; }
+    public long Id { get; set; }
     public int Number { get; set; }
     public string Title { get; set; }
     public string Body { get; set; }

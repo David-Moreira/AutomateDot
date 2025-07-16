@@ -1,4 +1,6 @@
-﻿namespace AutomateDot.Payloads.GitHub;
+﻿#nullable disable
+
+namespace AutomateDot.Payloads.GitHub;
 
 public class GithubRepositoryRepoInfo
 {
