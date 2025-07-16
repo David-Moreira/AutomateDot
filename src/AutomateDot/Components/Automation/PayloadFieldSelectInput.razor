@@ -1,6 +1,6 @@
 ﻿@if (PayloadFields.Count > 0)
 {
-    <EditSelect TValue="string" ValueChanged="OnFieldSelected">
+    <EditSelect id="@_elementId" TValue="string" ValueChanged="OnFieldSelected">
         <option value="">-- Insert field --</option>
         @foreach (var field in PayloadFields)
         {
@@ -9,15 +9,19 @@
     </EditSelect>
 }
 @code {
+    [Inject] public IJSRuntime JSRuntime { get; set; } = default!;
     [Parameter] public Dictionary<string, string> PayloadFields { get; set; } = new();
     [Parameter] public string Message { get; set; } = string.Empty;
     [Parameter] public EventCallback<string> MessageChanged { get; set; } 
+    private string _elementId = $"payload-field-select-{Guid.NewGuid().ToString("N")}";
     private async Task OnFieldSelected(string value)
     {
         if (!string.IsNullOrEmpty(value))
         {
             Message += $"{{{{{value}}}}} ";
             await MessageChanged.InvokeAsync(Message);
+
+            await JSRuntime.InvokeVoidAsync("focusNearestInput", _elementId);
         }
     }
 }

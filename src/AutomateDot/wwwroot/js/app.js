@@ -7,6 +7,16 @@
 function isMobile() {
     return window.innerWidth < 576;
 }
+function focusNearestInput(elementId) {
+    var element = document.getElementById(elementId);
+    if (element) {
+        // This assumes a specific structure for PayloadFieldSelectInput, improve later if needed
+        var nearestInput = element.parentElement.parentElement.querySelector('input, select, textarea');
+        if (nearestInput) {
+            nearestInput.focus();
+        }
+    }
+}
 
 window.downloadFileFromStream = async (fileName, contentStreamReference) => {
     const arrayBuffer = await contentStreamReference.arrayBuffer();
