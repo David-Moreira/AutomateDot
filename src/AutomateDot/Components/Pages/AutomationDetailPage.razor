@@ -1,7 +1,5 @@
 ﻿@page "/automates/{id:int}"
 @using AutomateDot.Components.Automation
-@using AutomateDot.Data
-@using Microsoft.EntityFrameworkCore
 
 <PageContainer>
     <TitleContent>
@@ -76,7 +74,7 @@
 </PageContainer>
 @code {
     [Inject] public ILogger<AutomationDetailPage> Logger { get; set; } = default!;
-    [Inject] public ApplicationDbContext ApplicationDbContext { get; set; } = default!;
+    [Inject] public AutomationService AutomationService { get; set; } = default!;
     [Inject] public NavigationManager NavigationManager { get; set; } = default!;
 
     [Parameter] public int Id { get; set; }
@@ -95,11 +93,11 @@
         try
         {
             await base.OnInitializedAsync();
-            Input = await ApplicationDbContext.AutomationRecipes.FirstAsync(x => x.Id == Id);
+            Input = await AutomationService.Get(Id);
             
             DefinitionInput.Name = Input.Name;
-            // TriggerInput.SetTriggerConfiguration(Input);
-            // ActionInput.SetActionConfiguration(Input);
+            TriggerInput.SetConfiguration(Input);
+            ActionInput.SetConfiguration(Input);
         }
         finally
         {
@@ -156,8 +154,7 @@
             Input.Action = ActionInput.Action ?? throw new ArgumentNullException();
             Input.ActionConfiguration = ActionInput.GetConfiguration();
 
-            ApplicationDbContext.AutomationRecipes.Update(Input);
-            await ApplicationDbContext.SaveChangesAsync();
+            await AutomationService.Update(Input);
 
             NavigationManager.NavigateTo("/automates");
         }

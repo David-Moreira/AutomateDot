@@ -1,6 +1,5 @@
 ﻿@page "/automates/create"
 @using AutomateDot.Components.Automation
-@using AutomateDot.Data
 
 <PageContainer>
     <TitleContent>
@@ -64,7 +63,7 @@
 </PageContainer>
 @code {
     [Inject] public ILogger<AutomationCreatePage> Logger { get; set; } = default!;
-    [Inject] public ApplicationDbContext ApplicationDbContext { get; set; } = default!;
+    [Inject] public AutomationService AutomationService { get; set; } = default!;
     [Inject] public NavigationManager NavigationManager { get; set; } = default!;
     public AutomationRecipeDefinitionDto DefinitionInput { get; set; } = new();
     public AutomationRecipeTriggerDto TriggerInput { get; set; } = new();
@@ -117,8 +116,7 @@
                 ActionConfiguration = ActionInput.GetConfiguration()
             };
 
-            await ApplicationDbContext.AddAsync(newRecipe);
-            await ApplicationDbContext.SaveChangesAsync();
+            await AutomationService.Add(newRecipe);
             NavigationManager.NavigateTo("automates");
         }
         catch (Exception ex)

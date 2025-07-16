@@ -1,0 +1,11 @@
+@using AutomateDot.Configurations
+@inherits TriggerFormBase<CronTriggerConfiguration>
+@attribute [AutomateDefinition(AutomateDot.Automate.Constants.Triggers.CRON, "Cron Schedule")]
+
+<EditText @bind-Value="TriggerConfiguration.CronExpression" Caption="Cron Expression" />
+<EditText @bind-Value="TriggerConfiguration.Description" Caption="Description (optional)" />
+
+<Info>
+    Use standard cron format (e.g., <code>0 0 * * *</code> for every day at midnight).
+    <a href="https://crontab.cronhub.io/" target="_blank">Learn more</a>
+</Info>

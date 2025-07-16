@@ -5,6 +5,9 @@ using AutomateDot.Components.Automation;
 using AutomateDot.Data;
 using AutomateDot.Services;
 
+using Hangfire;
+using Hangfire.Storage.SQLite;
+
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 
@@ -42,7 +45,7 @@ try
     //For now we'll be using dbContext directly in the pages to develop faster. Ideally we would encapsulate it in a repository/service.
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
     {
-        options.UseSqlite($"DataSource={builder.Configuration.GetConnectionString("SqlLite")}");
+        options.UseSqlite($"DataSource={builder.Configuration.GetConnectionString("Sqlite")}");
     });
 
     builder.Services.AddHttpClient();
@@ -54,6 +57,7 @@ try
     builder.Services.AddScoped<ScriptAction>();
 
     AddAutomateServices(builder.Services);
+    AddHangfire(builder.Services, builder.Configuration);
 
     var app = builder.Build();
 
@@ -78,6 +82,8 @@ try
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         await dbContext.Database.MigrateAsync();
     }
+
+    app.UseHangfireDashboard();
 
     app.Run();
 }
@@ -218,4 +224,14 @@ static void AddAutomateServices(IServiceCollection services)
         var formName = actionNameAttribute?.Name ?? formTriggerType.Name;
         AutomateFormRegistry.TriggerForms.Add(new AutomateFormDefinition(formId, formName, formTriggerType, existingConfigurationType, null));
     }
+}
+
+static void AddHangfire(IServiceCollection services, IConfiguration configuration)
+{
+    services.AddHangfire(hangfireConfiguration => hangfireConfiguration
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UseSQLiteStorage(configuration.GetConnectionString("HangfireSqlite")));
+
+    services.AddHangfireServer();
 }

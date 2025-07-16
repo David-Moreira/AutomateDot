@@ -23,10 +23,10 @@ public class AutomationRecipeTriggerDto
 
     public void SetConfiguration(AutomationRecipe automationRecipe)
     {
-        var definition = AutomateFormRegistry.ActionForms.FirstOrDefault(x => x.Id == automationRecipe.Trigger);
+        var definition = AutomateFormRegistry.TriggerForms.FirstOrDefault(x => x.Id == automationRecipe.Trigger);
         if (definition is not null)
         {
-            Trigger = definition.Name;
+            Trigger = automationRecipe.Trigger;
             FormType = definition.FormType;
             Configuration = System.Text.Json.JsonSerializer.Deserialize(automationRecipe.TriggerConfiguration, definition.ConfigurationType);
         }
@@ -53,7 +53,7 @@ public class AutomationRecipeActionDto
         var definition = AutomateFormRegistry.ActionForms.FirstOrDefault(x => x.Id == automationRecipe.Action);
         if (definition is not null)
         {
-            Action = definition.Name;
+            Action = automationRecipe.Action;
             FormType = definition.FormType;
             Configuration = System.Text.Json.JsonSerializer.Deserialize(automationRecipe.ActionConfiguration, definition.ConfigurationType);
         }

@@ -25,7 +25,7 @@
 @code {
     [Inject] public ILogger<AutomationPage> Logger { get; set; } = default!;
     [Inject] public NavigationManager NavigationManager { get; set; } = default!;
-    [Inject] public ApplicationDbContext ApplicationDbContext { get; set; } = default!;
+    [Inject] public AutomationService AutomationService { get; set; } = default!;
 
     private List<AutomationRecipeDto> _automations = new();
     private bool _isLoading;
@@ -54,7 +54,7 @@
             _isLoading = true;
             StateHasChanged();
 
-            var recipes = await ApplicationDbContext.AutomationRecipes.ToListAsync();
+            var recipes = await AutomationService.GetAll();
             _automations = recipes.Select(x => new AutomationRecipeDto()
             {
                 Id = x.Id,
