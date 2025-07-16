@@ -36,6 +36,9 @@ else
                                         Trigger
                                     </button>
                                 </td>
+                            }else if (_hasManualTrigger)
+                            {
+                                <td></td>
                             }
                         </tr>
                     }
@@ -73,6 +76,10 @@ else
                                     </button>
                                 </td>
                             }
+                            else if (_hasManualTrigger)
+                            {
+                                <td></td>
+                            }
                         </tr>
                     }
                 </tbody>
@@ -86,6 +93,17 @@ else
     [Inject] public NavigationManager NavigationManager { get; set; } = default!;
     [Inject] public AutomationService AutomationService { get; set; } = default!;
 
+    private bool _hasManualTrigger;
+
+    protected override void OnParametersSet()
+    {
+        _hasManualTrigger = HasManualTrigger();
+    }
+
+    public bool HasManualTrigger()
+    {
+        return (Data ?? Enumerable.Empty<AutomationRecipeDto>()).Any(x => x.Trigger == Triggers.MANUAL);
+    }
 
     public void GoToDetail(AutomationRecipeDto item)
     {
