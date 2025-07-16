@@ -1,7 +1,12 @@
-﻿@using AutomateDot.Configurations  
-@inherits ActionFormBase<ScriptConfiguration>  
-@attribute [AutomateDefinition("ae2c0f6c-85d1-4df6-9112-d14e95897c4f", "Script")] 
+﻿@using AutomateDot.Configurations
+@inherits ActionFormBase<ScriptConfiguration>
+@attribute [AutomateDefinition("ae2c0f6c-85d1-4df6-9112-d14e95897c4f", "Script")]
 
-<EditText @bind-Value="ActionConfiguration.File" Caption="File" />  
-<EditTextArea @bind-Value="ActionConfiguration.Arguments" Caption="Arguments" />
-<PayloadFieldSelectInput PayloadFields="GetPayloadFields()" @bind-Message="@ActionConfiguration.Arguments"></PayloadFieldSelectInput>
+<div class="join join-vertical w-full">
+    <EditText @bind-Value="ActionConfiguration.File" Caption="File" />
+    <PayloadFieldSelectInput PayloadFields="GetPayloadFields()" @bind-Message="@ActionConfiguration.Arguments"></PayloadFieldSelectInput>
+</div>
+<div class="join join-vertical w-full">
+    <EditTextArea @bind-Value="ActionConfiguration.Arguments" Caption="Arguments" />
+    <PayloadFieldSelectInput PayloadFields="GetPayloadFields()" @bind-Message="@ActionConfiguration.Arguments"></PayloadFieldSelectInput>
+</div>

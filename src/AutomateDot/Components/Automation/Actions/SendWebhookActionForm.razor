@@ -4,4 +4,7 @@
 @attribute [AutomateDefinition("4098768e-0c9d-4f36-a823-88d4adad8e55", "Send Webhook")]
 
 <EditText @bind-Value="ActionConfiguration.Url" Caption="Url" />
-<EditTextArea @bind-Value="ActionConfiguration.Message" Caption="Message" />
+<div class="join join-vertical w-full">
+    <EditTextArea @bind-Value="ActionConfiguration.Message" Caption="Message" />
+    <PayloadFieldSelectInput PayloadFields="GetPayloadFields()" @bind-Message="@ActionConfiguration.Message"></PayloadFieldSelectInput>
+</div>
