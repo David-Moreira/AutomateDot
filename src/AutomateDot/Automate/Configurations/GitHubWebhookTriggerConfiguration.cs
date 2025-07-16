@@ -28,33 +28,42 @@ public sealed class GitHubWebhookTriggerConfiguration : ITriggerConfiguration
 
     public Dictionary<string, string> GetPayloadFields()
     {
+        Dictionary<string, string> payloadFields = [];
+
         switch (TriggerEvent)
         {
             case GitHubWebhookTriggerEvent.CreateBranch:
-                return PayloadFieldHelper.GetFlattenedFields<GithubCreateEventPayload>().ToDictionary(x => x, x => x);
+                payloadFields = PayloadFieldHelper.GetFlattenedFields<GithubCreateEventPayload>().ToDictionary(x => x, x => x);
+                break;
 
             case GitHubWebhookTriggerEvent.DeleteBranch:
-                return PayloadFieldHelper.GetFlattenedFields<GithubDeleteEventPayload>().ToDictionary(x => x, x => x);
+                payloadFields = PayloadFieldHelper.GetFlattenedFields<GithubDeleteEventPayload>().ToDictionary(x => x, x => x);
+                break;
 
             case GitHubWebhookTriggerEvent.CreateTag:
-                return PayloadFieldHelper.GetFlattenedFields<GithubCreateEventPayload>().ToDictionary(x => x, x => x);
+                payloadFields = PayloadFieldHelper.GetFlattenedFields<GithubCreateEventPayload>().ToDictionary(x => x, x => x);
+                break;
 
             case GitHubWebhookTriggerEvent.DeleteTag:
-                return PayloadFieldHelper.GetFlattenedFields<GithubDeleteEventPayload>().ToDictionary(x => x, x => x);
+                payloadFields = PayloadFieldHelper.GetFlattenedFields<GithubDeleteEventPayload>().ToDictionary(x => x, x => x);
+                break;
 
             case GitHubWebhookTriggerEvent.Released:
-                return PayloadFieldHelper.GetFlattenedFields<GithubReleaseEventPayload>().ToDictionary(x => x, x => x);
+                payloadFields = PayloadFieldHelper.GetFlattenedFields<GithubReleaseEventPayload>().ToDictionary(x => x, x => x);
+                break;
 
             case GitHubWebhookTriggerEvent.NewIssue:
-                return PayloadFieldHelper.GetFlattenedFields<GithubIssuesEventPayload>().ToDictionary(x => x, x => x);
+                payloadFields = PayloadFieldHelper.GetFlattenedFields<GithubIssuesEventPayload>().ToDictionary(x => x, x => x);
+                break;
 
             case GitHubWebhookTriggerEvent.NewPullRequest:
-                return PayloadFieldHelper.GetFlattenedFields<GithubPullRequestEventPayload>().ToDictionary(x => x, x => x);
+                payloadFields = PayloadFieldHelper.GetFlattenedFields<GithubPullRequestEventPayload>().ToDictionary(x => x, x => x);
+                break;
 
             default:
                 break;
         }
 
-        return new();
+        return PayloadFieldHelper.GetWithAdditionalPayloadMappingOptions(payloadFields);
     }
 }

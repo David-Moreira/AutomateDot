@@ -1,4 +1,7 @@
-﻿using System.Reflection;
+﻿using AutomateDot.Payloads;
+using AutomateDot.Utilities;
+
+using System.Reflection;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -11,11 +14,17 @@ public static partial class ActionHelper
         if (payload is null)
             return template;
 
-        var regex = PayloadFieldPlaceholderRegex();
-        return regex.Replace(template, match =>
+        var result = PayloadFieldPlaceholderRegex().Replace(template, match =>
         {
-            var path = match.Groups[1].Value.Split('.');
             object? value = payload;
+            var placeholder = match.Groups[1].Value;
+
+            if (placeholder == PayloadFieldHelper.PAYLOAD_FULL)
+            {
+                return JsonSerializer.Serialize(value, JsonSerializerConfiguration.PrettyWriteOptions);
+            }
+
+            var path = placeholder.Split('.');
 
             foreach (var prop in path)
             {
@@ -50,6 +59,12 @@ public static partial class ActionHelper
 
             return value?.ToString() ?? string.Empty;
         });
+
+        result = PayloadFieldEmptyPlaceholderRegex().Replace(result, match =>
+        {
+            return string.Empty;
+        });
+        return result;
     }
 
     private static object? GetJsonElementPropertyCaseInsensitive(JsonElement element, string property)
@@ -67,4 +82,7 @@ public static partial class ActionHelper
 
     [GeneratedRegex(@"\{\{\s*([\w\.]+)\s*\}\}")]
     public static partial Regex PayloadFieldPlaceholderRegex();
+
+    [GeneratedRegex(@"\{\{([\s]+)\}\}")]
+    public static partial Regex PayloadFieldEmptyPlaceholderRegex();
 }

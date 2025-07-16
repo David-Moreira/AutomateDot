@@ -8,3 +8,15 @@ Content-Type: application/json; charset=utf-8
 
 GET http://localhost:5109/api/webhook
 X-AutomateDot-Event: Test
+
+###
+
+POST http://localhost:5109/api/webhook
+X-AutomateDot-Event: Test
+Content-Type: application/json; charset=utf-8
+
+{
+  "Test": {
+    "Name": "AutomateDot Test"
+  }
+}

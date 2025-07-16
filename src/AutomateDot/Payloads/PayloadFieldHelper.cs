@@ -4,6 +4,22 @@ namespace AutomateDot.Payloads;
 
 public static class PayloadFieldHelper
 {
+    public const string PAYLOAD_FULL = "PAYLOAD_FULL";
+
+    public static Dictionary<string, string> GetWithAdditionalPayloadMappingOptions(Dictionary<string, string>? payloadFields)
+    {
+        var newPayloadFields = new Dictionary<string, string>();
+        newPayloadFields.Add(" ", "Payload dynamic field");
+        newPayloadFields.Add(PAYLOAD_FULL, "Full Payload");
+
+        foreach (var payloadField in payloadFields ?? [])
+        {
+            newPayloadFields.Add(payloadField.Key, payloadField.Value);
+        }
+
+        return newPayloadFields;
+    }
+
     public static List<string> GetFlattenedFields<T>(int maxDepth = 3)
     {
         return GetFlattenedFields(typeof(T), maxDepth);
