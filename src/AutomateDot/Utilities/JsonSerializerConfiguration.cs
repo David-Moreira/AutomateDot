@@ -10,6 +10,7 @@ public static class JsonSerializerConfiguration
     public static readonly System.Text.Json.JsonSerializerOptions PrettyWriteOptions = new System.Text.Json.JsonSerializerOptions
     {
         WriteIndented = true,
-        DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+        DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
+        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
     };
 }
