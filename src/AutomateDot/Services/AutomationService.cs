@@ -1,5 +1,6 @@
 ﻿using AutomateDot.Actions;
 using AutomateDot.Automate;
+using AutomateDot.Automate.Configurations;
 using AutomateDot.Configurations;
 using AutomateDot.Data;
 using AutomateDot.Data.Entities;
