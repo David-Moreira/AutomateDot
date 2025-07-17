@@ -4,9 +4,9 @@
 
 <div class="join join-vertical w-full">
     <EditText @bind-Value="ActionConfiguration.File" Caption="File" />
-    <PayloadFieldSelectInput PayloadFields="GetPayloadFields()" @bind-Message="@ActionConfiguration.File"></PayloadFieldSelectInput>
+    <PayloadFieldSelectInput PayloadFields="GetPayloadFields()" @bind-Message="@ActionConfiguration.File" />
 </div>
 <div class="join join-vertical w-full">
     <EditTextArea @bind-Value="ActionConfiguration.Arguments" Caption="Arguments" />
-    <PayloadFieldSelectInput PayloadFields="GetPayloadFields()" @bind-Message="@ActionConfiguration.Arguments"></PayloadFieldSelectInput>
+    <PayloadFieldSelectInput PayloadFields="GetPayloadFields()" @bind-Message="@ActionConfiguration.Arguments" />
 </div>

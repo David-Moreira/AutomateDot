@@ -5,11 +5,11 @@
 <EditText @bind-Value="ActionConfiguration.Url" Caption="Url" />
 <div class="join join-vertical w-full">
     <EditText @bind-Value="ActionConfiguration.Title" Caption="Title" />
-    <PayloadFieldSelectInput PayloadFields="GetPayloadFields()" @bind-Message="@ActionConfiguration.Title"></PayloadFieldSelectInput>
+    <PayloadFieldSelectInput PayloadFields="GetPayloadFields()" @bind-Message="@ActionConfiguration.Title" />
 </div>
 <div class="join join-vertical w-full">
     <EditTextArea @bind-Value="ActionConfiguration.Message" Caption="Message" />
-    <PayloadFieldSelectInput PayloadFields="GetPayloadFields()" @bind-Message="@ActionConfiguration.Message"></PayloadFieldSelectInput>
+    <PayloadFieldSelectInput PayloadFields="GetPayloadFields()" @bind-Message="@ActionConfiguration.Message" />
 </div>
 
 <EditNumber @bind-Value="ActionConfiguration.Priority" Caption="Priority" />

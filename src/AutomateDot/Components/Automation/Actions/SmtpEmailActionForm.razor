@@ -1,0 +1,18 @@
+@using AutomateDot.Configurations
+@inherits ActionFormBase<SmtpEmailConfiguration>
+@attribute [AutomateDefinition("dc10dfd4-0e65-48bc-ad7d-ccb8ae50fc47", "SMTP Email")]
+
+<EditText @bind-Value="ActionConfiguration.SmtpHost" Caption="SMTP Host" />
+<EditNumber @bind-Value="ActionConfiguration.SmtpPort" Caption="SMTP Port" />
+<EditText @bind-Value="ActionConfiguration.SmtpUser" Caption="SMTP User" />
+<EditText @bind-Value="ActionConfiguration.SmtpPass" Caption="SMTP Password" />
+<EditText @bind-Value="ActionConfiguration.From" Caption="From" />
+<EditText @bind-Value="ActionConfiguration.To" Caption="To" />
+<div class="join join-vertical w-full">
+    <EditText @bind-Value="ActionConfiguration.Subject" Caption="Subject" />
+    <PayloadFieldSelectInput PayloadFields="GetPayloadFields()" @bind-Message="@ActionConfiguration.Subject" />
+</div>
+<div class="join join-vertical w-full">
+    <EditTextArea @bind-Value="ActionConfiguration.Body" Caption="Body" />
+    <PayloadFieldSelectInput PayloadFields="GetPayloadFields()" @bind-Message="@ActionConfiguration.Body" />
+</div>
