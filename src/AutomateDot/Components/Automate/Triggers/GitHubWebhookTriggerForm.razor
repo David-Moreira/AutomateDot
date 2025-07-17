@@ -3,6 +3,7 @@
 @attribute [AutomateDefinition(Triggers.GITHUB, "GitHub Webhook")]
 
 <EditText @bind-Value=@TriggerConfiguration.Repository Caption="Repository" />
+<EditText @bind-Value=@TriggerConfiguration.Secret Caption="Secret" />
 <EditSelect @bind-Value="TriggerConfiguration.TriggerEvent" Caption="Event">
     @foreach (var item in Enum.GetValues<GitHubWebhookTriggerEvent>())
     {

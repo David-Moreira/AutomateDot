@@ -5,6 +5,9 @@ using AutomateDot.Triggers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+using System.Text;
+using System.Text.Json;
+
 namespace AutomateDot.Controllers;
 
 [AllowAnonymous]
@@ -20,8 +23,11 @@ public class WebhookController : AutomateDotController
     }
 
     [HttpPost("github")]
-    public async Task<IActionResult> Github([FromBody] object payload)
+    public async Task<IActionResult> Github()
     {
+        using var reader = new StreamReader(Request.Body, Encoding.UTF8, leaveOpen: true);
+        var payload = await reader.ReadToEndAsync();
+
         _logger.LogInformation("Github Webhook Payload {payload}", payload);
 
         var recipes = await _automationService.GetByTriggerId(Constants.Triggers.GITHUB);
@@ -32,7 +38,8 @@ public class WebhookController : AutomateDotController
             if (!GitHubWebhookTrigger.ShouldTrigger(this.Request, config!, payload))
                 return Ok();
 
-            await _automationService.ExecuteAction(recipe, payload);
+            var payloadAsObject = System.Text.Json.JsonSerializer.Deserialize<JsonElement>(payload);
+            await _automationService.ExecuteAction(recipe, payloadAsObject);
         }
 
         return Ok();

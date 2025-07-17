@@ -12,6 +12,8 @@ public sealed class GitHubWebhookTriggerConfiguration : ITriggerConfiguration
     [Required]
     public string Repository { get; set; } = string.Empty;
 
+    public string Secret { get; set; } = string.Empty;
+
     public string GithubTriggerEvent
         => TriggerEvent switch
         {
