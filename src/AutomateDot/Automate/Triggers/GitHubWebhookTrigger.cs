@@ -50,7 +50,7 @@ public static class GitHubWebhookTrigger
                     var releaseEventPayload = System.Text.Json.JsonSerializer.Deserialize<GithubReleaseEventPayload>(payloadAsString, JsonSerializerConfiguration.DefaultOptions);
                     return releaseEventPayload is not null &&
                     string.Equals(releaseEventPayload.Repository.Name, configuration.Repository, StringComparison.OrdinalIgnoreCase) &&
-                    string.Equals(releaseEventPayload?.Action, "released", StringComparison.OrdinalIgnoreCase);
+                    string.Equals(releaseEventPayload?.Action, "published", StringComparison.OrdinalIgnoreCase);
 
                 case Data.Enums.GitHubWebhookTriggerEvent.NewIssue:
                     var issuesEventPayload = System.Text.Json.JsonSerializer.Deserialize<GithubIssuesEventPayload>(payloadAsString, JsonSerializerConfiguration.DefaultOptions);
