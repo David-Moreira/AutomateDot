@@ -3,6 +3,7 @@ using AutomateDot.Automate;
 using AutomateDot.Configurations;
 using AutomateDot.Data;
 using AutomateDot.Data.Entities;
+using AutomateDot.Triggers;
 
 using Hangfire;
 
@@ -10,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AutomateDot.Services;
 
-public class AutomationService(ApplicationDbContext ApplicationDbContext, ActionsService ActionsService, ILogger<AutomationService> Logger)
+public class AutomationService(ApplicationDbContext ApplicationDbContext, ActionsService ActionsService, ILogger<AutomationService> Logger, PingTrigger PingTrigger)
 {
     public async Task<AutomationRecipe?> Get(int id)
     {
@@ -53,6 +54,23 @@ public class AutomationService(ApplicationDbContext ApplicationDbContext, Action
                 x => x.ExecuteAction(recipe.Id, null), configuration!.CronExpression);
             }
         }
+        else if (recipe.Trigger == Constants.Triggers.PING && recipe.IsActive)
+        {
+            //Hard coded for now, but should be configurable per Form,
+            //allowing access to Hangfire for scheduling
+            var definition = AutomateFormRegistry.
+                TriggerForms.FirstOrDefault(x => x.Id == Constants.Triggers.PING);
+            if (definition is not null)
+            {
+                var configuration =
+                    System.Text.Json.JsonSerializer.Deserialize(recipe.TriggerConfiguration, definition.ConfigurationType)
+                    as PingTriggerConfiguration;
+
+                RecurringJob.AddOrUpdate<AutomationService>(
+                recipe.Id.ToString(),
+                x => x.ExecutePingTrigger(recipe.Id, configuration!), $"*/{configuration!.Minutes} * * * *");
+            }
+        }
     }
 
     public async Task Update(AutomationRecipe recipe)
@@ -77,9 +95,35 @@ public class AutomationService(ApplicationDbContext ApplicationDbContext, Action
                 x => x.ExecuteAction(recipe.Id, null), configuration!.CronExpression);
             }
         }
+        else if (recipe.Trigger == Constants.Triggers.PING && recipe.IsActive)
+        {
+            //Hard coded for now, but should be configurable per Form,
+            //allowing access to Hangfire for scheduling
+            var definition = AutomateFormRegistry.
+                TriggerForms.FirstOrDefault(x => x.Id == Constants.Triggers.PING);
+            if (definition is not null)
+            {
+                var configuration =
+                    System.Text.Json.JsonSerializer.Deserialize(recipe.TriggerConfiguration, definition.ConfigurationType)
+                    as PingTriggerConfiguration;
+
+                RecurringJob.AddOrUpdate<AutomationService>(
+                recipe.Id.ToString(),
+                x => x.ExecutePingTrigger(recipe.Id, configuration!), $"*/{configuration!.Minutes} * * * *");
+            }
+        }
         else
         {
             RecurringJob.RemoveIfExists(recipe.Id.ToString());
+        }
+    }
+
+    public async Task ExecutePingTrigger(int id, PingTriggerConfiguration pingTriggerConfiguration)
+    {
+        var result = await PingTrigger.ShouldTrigger(pingTriggerConfiguration);
+        if (result)
+        {
+            await ExecuteAction(id, null);
         }
     }
 

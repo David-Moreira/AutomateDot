@@ -1,0 +1,7 @@
+@using AutomateDot.Configurations
+@inherits TriggerFormBase<PingTriggerConfiguration>
+@attribute [AutomateDefinition(Triggers.PING, "Ping")]
+
+<EditText @bind-Value="TriggerConfiguration.Url" Caption="Url" />
+<EditNumber @bind-Value="TriggerConfiguration.Minutes" Caption="Every X minutes" />
+<EditCheckbox @bind-Value="TriggerConfiguration.IsSuccess" Caption="Is Success" />

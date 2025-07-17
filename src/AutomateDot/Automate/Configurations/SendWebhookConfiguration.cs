@@ -7,6 +7,7 @@ namespace AutomateDot.Configurations;
 public sealed class SendWebhookConfiguration : IActionConfiguration
 {
     [Required]
+    [Url]
     public string Url { get; set; } = string.Empty;
 
     [Required]

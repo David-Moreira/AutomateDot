@@ -6,6 +6,7 @@ using AutomateDot.Components.Automation.Actions;
 using AutomateDot.Components.Automation.Triggers;
 using AutomateDot.Data;
 using AutomateDot.Services;
+using AutomateDot.Triggers;
 
 using Hangfire;
 using Hangfire.Storage.SQLite;
@@ -54,9 +55,6 @@ try
     builder.Services.AddScoped<AutomationService>();
     builder.Services.AddScoped<AutomationExecutionService>();
     builder.Services.AddScoped<ActionsService>();
-    builder.Services.AddScoped<SendWebhookAction>();
-    builder.Services.AddScoped<GotifyAction>();
-    builder.Services.AddScoped<ScriptAction>();
 
     AddAutomateServices(builder.Services);
     AddHangfire(builder.Services, builder.Configuration);
@@ -118,6 +116,8 @@ void Addlogging(WebApplicationBuilder builder)
 
 static void AddAutomateServices(IServiceCollection services)
 {
+    services.AddTransient<PingTrigger>();
+
     var actionConfigurationTypes = AppDomain.CurrentDomain
         .GetAssemblies()
         .SelectMany(a => a.GetTypes())
