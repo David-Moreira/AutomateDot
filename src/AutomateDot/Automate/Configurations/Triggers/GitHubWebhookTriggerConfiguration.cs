@@ -23,6 +23,8 @@ public sealed class GitHubWebhookTriggerConfiguration : ITriggerConfiguration
             GitHubWebhookTriggerEvent.DeleteTag => "delete",
             GitHubWebhookTriggerEvent.NewPullRequest => "pull_request",
             GitHubWebhookTriggerEvent.NewIssue => "issues",
+            GitHubWebhookTriggerEvent.Released => "release",
+            GitHubWebhookTriggerEvent.PreReleased => "release",
             _ => TriggerEvent.ToString().ToLower()
         };
 
@@ -51,6 +53,10 @@ public sealed class GitHubWebhookTriggerConfiguration : ITriggerConfiguration
                 break;
 
             case GitHubWebhookTriggerEvent.Released:
+                payloadFields = PayloadFieldHelper.GetFlattenedFields<GithubReleaseEventPayload>().ToDictionary(x => x, x => x);
+                break;
+
+            case GitHubWebhookTriggerEvent.PreReleased:
                 payloadFields = PayloadFieldHelper.GetFlattenedFields<GithubReleaseEventPayload>().ToDictionary(x => x, x => x);
                 break;
 

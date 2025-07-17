@@ -14,12 +14,14 @@ namespace AutomateDot.Controllers;
 public class WebhookController : AutomateDotController
 {
     private readonly AutomateService _automationService;
+    private readonly GitHubWebhookTrigger _gitHubWebhookTrigger;
     private readonly ILogger<WebhookController> _logger;
 
-    public WebhookController(ILogger<WebhookController> logger, AutomateService automationService)
+    public WebhookController(ILogger<WebhookController> logger, AutomateService automationService, GitHubWebhookTrigger gitHubWebhookTrigger)
     {
         _logger = logger;
         _automationService = automationService;
+        _gitHubWebhookTrigger = gitHubWebhookTrigger;
     }
 
     [HttpPost("github")]
@@ -35,8 +37,11 @@ public class WebhookController : AutomateDotController
         foreach (var recipe in recipes)
         {
             var config = System.Text.Json.JsonSerializer.Deserialize<GitHubWebhookTriggerConfiguration>(recipe.TriggerConfiguration);
-            if (!GitHubWebhookTrigger.ShouldTrigger(this.Request, config!, payload))
+            if (!_gitHubWebhookTrigger.ShouldTrigger(this.Request, config!, payload))
+            {
+                _logger.LogInformation("Automate {recipe} conditions failed for this github request.", recipe.Name);
                 return Ok();
+            }
 
             var payloadAsObject = System.Text.Json.JsonSerializer.Deserialize<JsonElement>(payload);
             await _automationService.ExecuteAction(recipe, payloadAsObject);
@@ -56,7 +61,10 @@ public class WebhookController : AutomateDotController
         {
             var config = System.Text.Json.JsonSerializer.Deserialize<AutomateDotWebhookTriggerConfiguration>(recipe.TriggerConfiguration);
             if (!AutomateDotWebhookTrigger.ShouldTrigger(this.Request, config!))
+            {
+                _logger.LogInformation("Automate {recipe} conditions failed for this automatedot request.", recipe.Name);
                 return Ok();
+            }
 
             await _automationService.ExecuteAction(recipe, payload);
         }
@@ -73,7 +81,10 @@ public class WebhookController : AutomateDotController
         {
             var config = System.Text.Json.JsonSerializer.Deserialize<AutomateDotWebhookTriggerConfiguration>(recipe.TriggerConfiguration);
             if (!AutomateDotWebhookTrigger.ShouldTrigger(this.Request, config!))
+            {
+                _logger.LogInformation("Automate {recipe} conditions failed for this automatedot request.", recipe.Name);
                 return Ok();
+            }
 
             await _automationService.ExecuteAction(recipe);
         }

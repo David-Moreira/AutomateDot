@@ -10,6 +10,7 @@ public enum GitHubWebhookTriggerEvent
     CreateTag,
     DeleteTag,
     Released,
+    PreReleased,
     NewIssue,
     NewPullRequest,
 }
@@ -25,6 +26,7 @@ public static class GitHubWebhookTriggerEventExtensions
             GitHubWebhookTriggerEvent.CreateTag => "Create Tag",
             GitHubWebhookTriggerEvent.DeleteTag => "Delete Tag",
             GitHubWebhookTriggerEvent.Released => "Released",
+            GitHubWebhookTriggerEvent.PreReleased => "Pre-release",
             GitHubWebhookTriggerEvent.NewIssue => "New Issue",
             GitHubWebhookTriggerEvent.NewPullRequest => "New Pull Request",
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)

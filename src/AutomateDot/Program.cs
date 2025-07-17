@@ -117,6 +117,7 @@ void Addlogging(WebApplicationBuilder builder)
 
 static void AddAutomateServices(IServiceCollection services)
 {
+    services.AddTransient<GitHubWebhookTrigger>();
     services.AddTransient<PingTrigger>();
 
     var actionConfigurationTypes = AppDomain.CurrentDomain
