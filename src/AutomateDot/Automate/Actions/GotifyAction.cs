@@ -18,6 +18,7 @@ public sealed class GotifyAction(IHttpClientFactory HttpClientFactory) : IAction
             priority = configuration.Priority
         };
         var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
-        await client.PostAsync(configuration.Url, content);
+        var response = await client.PostAsync(configuration.Url, content);
+        response.EnsureSuccessStatusCode();
     }
 }

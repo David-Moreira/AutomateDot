@@ -1,0 +1,10 @@
+@using AutomateDot.Configurations
+@inherits ActionFormBase<DiscordWebhookConfiguration>
+@attribute [AutomateDefinition("ca910c1d-208c-4542-8957-9135e258b0e3", "Discord")]
+
+<EditText @bind-Value="ActionConfiguration.Url" Caption="URL" />
+
+<div class="join join-vertical w-full">
+    <EditTextArea @bind-Value="ActionConfiguration.Message" Caption="Message Content" />
+    <PayloadFieldSelectInput PayloadFields="GetPayloadFields()" @bind-Message="@ActionConfiguration.Message" />
+</div>

@@ -10,6 +10,7 @@ public sealed class SendWebhookAction(IHttpClientFactory HttpClientFactory) : IA
     {
         using var client = HttpClientFactory.CreateClient();
         var content = new StringContent(ActionHelper.ReplacePlaceholders(configuration.Message, triggerPayload), Encoding.UTF8, "application/json");
-        await client.PostAsync(configuration.Url, content);
+        var response = await client.PostAsync(configuration.Url, content);
+        response.EnsureSuccessStatusCode();
     }
 }
