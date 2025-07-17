@@ -1,9 +1,10 @@
 using AutomateDot.Actions;
 using AutomateDot.Automate;
+using AutomateDot.Automate.Configurations;
 using AutomateDot.Components;
-using AutomateDot.Components.Automation;
-using AutomateDot.Components.Automation.Actions;
-using AutomateDot.Components.Automation.Triggers;
+using AutomateDot.Components.Automate;
+using AutomateDot.Components.Automate.Actions;
+using AutomateDot.Components.Automate.Triggers;
 using AutomateDot.Data;
 using AutomateDot.Services;
 using AutomateDot.Triggers;
@@ -52,8 +53,8 @@ try
     });
 
     builder.Services.AddHttpClient();
-    builder.Services.AddScoped<AutomationService>();
-    builder.Services.AddScoped<AutomationExecutionService>();
+    builder.Services.AddScoped<AutomateService>();
+    builder.Services.AddScoped<AutomateExecutionService>();
     builder.Services.AddScoped<ActionsService>();
 
     AddAutomateServices(builder.Services);

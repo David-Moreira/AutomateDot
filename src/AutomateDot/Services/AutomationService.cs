@@ -11,28 +11,28 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AutomateDot.Services;
 
-public class AutomationService(ApplicationDbContext ApplicationDbContext, ActionsService ActionsService, ILogger<AutomationService> Logger, PingTrigger PingTrigger)
+public class AutomateService(ApplicationDbContext ApplicationDbContext, ActionsService ActionsService, ILogger<AutomateService> Logger, PingTrigger PingTrigger)
 {
-    public async Task<AutomationRecipe?> Get(int id)
+    public async Task<AutomateRecipe?> Get(int id)
     {
-        return await ApplicationDbContext.AutomationRecipes.FirstOrDefaultAsync(x => x.Id == id);
+        return await ApplicationDbContext.AutomateRecipes.FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<List<AutomationRecipe>> GetAll()
+    public async Task<List<AutomateRecipe>> GetAll()
     {
-        return await ApplicationDbContext.AutomationRecipes
+        return await ApplicationDbContext.AutomateRecipes
             .OrderByDescending(x => x.Id)
             .ToListAsync();
     }
 
-    public async Task<List<AutomationRecipe>> GetByTriggerId(string id)
+    public async Task<List<AutomateRecipe>> GetByTriggerId(string id)
     {
-        return await ApplicationDbContext.AutomationRecipes
+        return await ApplicationDbContext.AutomateRecipes
             .Where(x => x.Trigger == id)
             .ToListAsync();
     }
 
-    public async Task Add(AutomationRecipe recipe)
+    public async Task Add(AutomateRecipe recipe)
     {
         await ApplicationDbContext.AddAsync(recipe);
         await ApplicationDbContext.SaveChangesAsync();
@@ -49,7 +49,7 @@ public class AutomationService(ApplicationDbContext ApplicationDbContext, Action
                     System.Text.Json.JsonSerializer.Deserialize(recipe.TriggerConfiguration, definition.ConfigurationType)
                     as CronTriggerConfiguration;
 
-                RecurringJob.AddOrUpdate<AutomationService>(
+                RecurringJob.AddOrUpdate<AutomateService>(
                 recipe.Id.ToString(),
                 x => x.ExecuteAction(recipe.Id, null), configuration!.CronExpression);
             }
@@ -66,16 +66,16 @@ public class AutomationService(ApplicationDbContext ApplicationDbContext, Action
                     System.Text.Json.JsonSerializer.Deserialize(recipe.TriggerConfiguration, definition.ConfigurationType)
                     as PingTriggerConfiguration;
 
-                RecurringJob.AddOrUpdate<AutomationService>(
+                RecurringJob.AddOrUpdate<AutomateService>(
                 recipe.Id.ToString(),
                 x => x.ExecutePingTrigger(recipe.Id, configuration!), $"*/{configuration!.Minutes} * * * *");
             }
         }
     }
 
-    public async Task Update(AutomationRecipe recipe)
+    public async Task Update(AutomateRecipe recipe)
     {
-        ApplicationDbContext.AutomationRecipes.Update(recipe);
+        ApplicationDbContext.AutomateRecipes.Update(recipe);
         await ApplicationDbContext.SaveChangesAsync();
 
         if (recipe.Trigger == Constants.Triggers.CRON && recipe.IsActive)
@@ -90,7 +90,7 @@ public class AutomationService(ApplicationDbContext ApplicationDbContext, Action
                     System.Text.Json.JsonSerializer.Deserialize(recipe.TriggerConfiguration, definition.ConfigurationType)
                     as CronTriggerConfiguration;
 
-                RecurringJob.AddOrUpdate<AutomationService>(
+                RecurringJob.AddOrUpdate<AutomateService>(
                 recipe.Id.ToString(),
                 x => x.ExecuteAction(recipe.Id, null), configuration!.CronExpression);
             }
@@ -107,7 +107,7 @@ public class AutomationService(ApplicationDbContext ApplicationDbContext, Action
                     System.Text.Json.JsonSerializer.Deserialize(recipe.TriggerConfiguration, definition.ConfigurationType)
                     as PingTriggerConfiguration;
 
-                RecurringJob.AddOrUpdate<AutomationService>(
+                RecurringJob.AddOrUpdate<AutomateService>(
                 recipe.Id.ToString(),
                 x => x.ExecutePingTrigger(recipe.Id, configuration!), $"*/{configuration!.Minutes} * * * *");
             }
@@ -130,7 +130,7 @@ public class AutomationService(ApplicationDbContext ApplicationDbContext, Action
     public async Task ExecuteAction(int id, object? triggerPayload = null)
     {
         var recipe = await ApplicationDbContext
-            .AutomationRecipes.FirstOrDefaultAsync(x => x.Id == id);
+            .AutomateRecipes.FirstOrDefaultAsync(x => x.Id == id);
 
         if (recipe is null)
         {
@@ -141,7 +141,7 @@ public class AutomationService(ApplicationDbContext ApplicationDbContext, Action
         await ExecuteAction(recipe, triggerPayload);
     }
 
-    public async Task ExecuteAction(AutomationRecipe recipe, object? triggerPayload = null)
+    public async Task ExecuteAction(AutomateRecipe recipe, object? triggerPayload = null)
     {
         await ActionsService.Execute(recipe, triggerPayload);
     }

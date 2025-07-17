@@ -10,10 +10,10 @@ namespace AutomateDot.Controllers;
 [AllowAnonymous]
 public class WebhookController : AutomateDotController
 {
-    private readonly AutomationService _automationService;
+    private readonly AutomateService _automationService;
     private readonly ILogger<WebhookController> _logger;
 
-    public WebhookController(ILogger<WebhookController> logger, AutomationService automationService)
+    public WebhookController(ILogger<WebhookController> logger, AutomateService automationService)
     {
         _logger = logger;
         _automationService = automationService;

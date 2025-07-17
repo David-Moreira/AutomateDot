@@ -1,0 +1,96 @@
+﻿@using AutomateDot.Extensions
+@if (Data.IsNullOrEmpty())
+{
+    <div>You have no records yet.</div>
+}
+else
+{
+    @if (CascadingMobileDetector.IsMobile)
+    {
+        <div>
+            <table class="table w-full">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Trigger</th>
+                        <th>Action</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Data ?? Enumerable.Empty<AutomateExecutionDto>())
+                    {
+                        <tr class="hover:bg-base-300" @onclick="() => GoToDetail(item)">
+                            <td>
+                                <div class="text-sm font-bold">@item.Name</div>
+                                <div class="text-xs opacity-50">@item.CreatedOn.ToLocalTime()</div>
+                            </td>
+                            <td>
+                                <div class="text-sm">@item.TriggerName</div>
+                            </td>
+                            <td>
+                                <div class="text-sm">@item.ActionName</div>
+                            </td>
+                            <td>
+                                <div class="text-sm">@item.Status</div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="overflow-x-auto">
+            <table class="table w-full">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Date</th>
+                        <th>Trigger</th>
+                        <th>Action</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Data ?? Enumerable.Empty<AutomateExecutionDto>())
+                    {
+                        <tr class="hover:bg-base-300" @onclick="() => GoToDetail(item)">
+                            <td>
+                                <div class="font-bold">@item.Name</div>
+                            </td>
+                            <td>@item.CreatedOn.ToLocalTime()</td>
+                            <td>@item.TriggerName</td>
+                            <td>@item.ActionName</td>
+                            <td>@item.Status</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+}
+
+<Modal @ref=_modalRef Title="@_input?.Name" AllowCancel=false ConfirmCaption="Ok" AutoCloseOnConfirm>
+    @if (_input is not null)
+    {
+        <AutomateExecutionEntries Data="_input.AutomateExecutionEntries.ToList()" />
+    }
+</Modal>
+
+
+@code {
+    [CascadingParameter] public CascadingMobileDetector CascadingMobileDetector { get; set; } = default!;
+    [EditorRequired][Parameter] public List<AutomateExecutionDto>? Data { get; set; }
+    [Inject] public NavigationManager NavigationManager { get; set; } = default!;
+    
+    private Modal _modalRef = default!;
+    private AutomateExecutionDto? _input;
+
+    public async Task GoToDetail(AutomateExecutionDto item)
+    {
+        _input = item;
+        await _modalRef.Open();
+    }
+}

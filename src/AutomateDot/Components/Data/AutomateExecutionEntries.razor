@@ -1,0 +1,65 @@
+﻿@using AutomateDot.Extensions
+@if (Data.IsNullOrEmpty())
+{
+    <div>You have no records yet.</div>
+}
+else
+{
+    @if (CascadingMobileDetector.IsMobile)
+    {
+        <div>
+            <table class="table w-full">
+                <thead>
+                    <tr>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Data ?? Enumerable.Empty<AutomateExecutionEntryDto>())
+                    {
+                        <tr class="hover:bg-base-300">
+                            <td>
+                                <div class="text-sm">@item.CreatedOn</div>
+                            </td>
+                            <td>
+                                <div class="text-sm">@item.Message</div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="overflow-x-auto">
+            <table class="table w-full">
+                <thead>
+                    <tr>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Data ?? Enumerable.Empty<AutomateExecutionEntryDto>())
+                    {
+                        <tr class="hover:bg-base-300">
+                            <td>
+                                @item.CreatedOn
+                            </td>
+                            <td>
+                                @item.Message
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+}
+@code {
+    [CascadingParameter] public CascadingMobileDetector CascadingMobileDetector { get; set; } = default!;
+    [EditorRequired][Parameter] public List<AutomateExecutionEntryDto>? Data { get; set; }
+    [Inject] public NavigationManager NavigationManager { get; set; } = default!;
+
+
+}

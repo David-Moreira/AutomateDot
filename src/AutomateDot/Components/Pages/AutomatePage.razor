@@ -1,22 +1,33 @@
-﻿@page "/"
+﻿@page "/automates"
 @using System.Net.Http.Headers
 @using System.Text.Json
 @using AutomateDot.Data
 @using Microsoft.EntityFrameworkCore
 
-<PageTitle>AutomateDot</PageTitle>
+<PageTitle>AutomateDot | Automates</PageTitle>
 
-<PageContainer Title="Executions">
+<PageContainer Title="Automates">
+    <TitleContent>
+    </TitleContent>
     <ChildContent>
         <Loading IsLoading="_isLoading">
-            <AutomateExecutions Data="_executions" />
+            <div class="flex flex-col md:flex-row mb-5">
+                <button @onclick="Create" class="float-right btn btn-primary">
+                    Create
+                </button>
+            </div>
+
+            <Automates Data="_automations" />
         </Loading>
     </ChildContent>
 </PageContainer>
 
 @code {
-    [Inject] public ApplicationDbContext ApplicationDbContext { get; set; } = default!;
-    private List<AutomateExecutionDto> _executions = new();
+    [Inject] public ILogger<AutomatePage> Logger { get; set; } = default!;
+    [Inject] public NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] public AutomateService AutomateService { get; set; } = default!;
+
+    private List<AutomateRecipeDto> _automations = new();
     private bool _isLoading;
 
     protected override async Task OnInitializedAsync()
@@ -43,25 +54,14 @@
             _isLoading = true;
             StateHasChanged();
 
-            var executions = await ApplicationDbContext.AutomateExecutions
-                    .Include(x=> x.AutomateExecutionEntries)
-                    .OrderByDescending(x=> x.CreatedOn)
-                    .ToListAsync();
-
-            _executions = executions.Select(x => new AutomateExecutionDto()
+            var recipes = await AutomateService.GetAll();
+            _automations = recipes.Select(x => new AutomateRecipeDto()
             {
                 Id = x.Id,
                 Name = x.Name,
-                CreatedOn = x.CreatedOn,
                 Trigger = x.Trigger,
                 Action = x.Action,
-                Status = x.Status,
-                AutomateExecutionEntries = x.AutomateExecutionEntries.Select(e => new AutomateExecutionEntryDto
-                {
-                    Id = e.Id,
-                    CreatedOn = e.CreatedOn,
-                    Message = e.Message
-                }).ToList()
+                IsActive = x.IsActive
             }).ToList();
         }
         finally
@@ -69,5 +69,11 @@
             _isLoading = false;
             StateHasChanged();
         }
+    }
+
+    private Task Create()
+    {
+        NavigationManager.NavigateTo("automates/create");
+        return Task.CompletedTask;
     }
 }

@@ -1,4 +1,4 @@
-﻿using AutomateDot.Components.Automation.Actions;
+﻿using AutomateDot.Automate.Configurations;
 
 namespace AutomateDot.Actions;
 

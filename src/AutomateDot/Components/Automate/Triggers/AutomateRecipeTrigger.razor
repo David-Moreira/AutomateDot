@@ -1,0 +1,40 @@
+@using AutomateDot.Automate
+@using AutomateDot.Data
+@using Microsoft.EntityFrameworkCore
+
+<EditSelect TValue="string" 
+    Value="@TriggerInput.Trigger" ValueChanged="SelectedFormChanged" ValueExpression="() => TriggerInput.Trigger" 
+    Caption="Trigger">
+    <option value=""></option>
+    @foreach (var item in AutomateFormRegistry.TriggerForms)
+    {
+        <option value="@item.Id">@item.Name</option>
+    }
+</EditSelect>
+
+@if (TriggerInput.FormType is not null && TriggerInput.Configuration is not null)
+{
+    <DynamicComponent Type="@TriggerInput.FormType" Parameters="@(new Dictionary<string, object> { ["TriggerConfiguration"] = TriggerInput.Configuration })" />
+}
+
+@code {
+    [Inject] public IServiceProvider ServiceProvider { get; set; } = default!;
+    [Parameter] public AutomateRecipeTriggerDto TriggerInput { get; set; } = new();
+
+    private void SelectedFormChanged(string selectedForm)
+    {
+        TriggerInput.Trigger = selectedForm;
+        var selectedFormDefinition = AutomateFormRegistry.TriggerForms.FirstOrDefault(x => x.Id == TriggerInput.Trigger);
+        if (selectedFormDefinition is null)
+        {
+            TriggerInput.Configuration = null;
+            TriggerInput.FormType = null;
+        }
+        else
+        {
+            TriggerInput.Configuration = ServiceProvider.GetService(selectedFormDefinition.ConfigurationType);
+            TriggerInput.FormType = selectedFormDefinition?.FormType;
+        }
+    }
+
+}

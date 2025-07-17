@@ -1,16 +1,16 @@
 ﻿using AutomateDot.Automate;
-using AutomateDot.Components.Automation.Actions;
+using AutomateDot.Automate.Configurations;
 using AutomateDot.Data.Entities;
 using AutomateDot.Data.Enums;
 using AutomateDot.Services;
 
 namespace AutomateDot.Actions;
 
-public class ActionsService(AutomationExecutionService AutomationExecutionService, ILogger<ActionsService> Logger, IServiceProvider ServiceProvider)
+public class ActionsService(AutomateExecutionService AutomateExecutionService, ILogger<ActionsService> Logger, IServiceProvider ServiceProvider)
 {
-    public async Task Execute(AutomationRecipe recipe, object? triggerPayload = null)
+    public async Task Execute(AutomateRecipe recipe, object? triggerPayload = null)
     {
-        var executionId = await AutomationExecutionService.StartExecution(recipe);
+        var executionId = await AutomateExecutionService.StartExecution(recipe);
 
         try
         {
@@ -56,13 +56,13 @@ public class ActionsService(AutomationExecutionService AutomationExecutionServic
 
     private async Task LogSuccess(int executionId)
     {
-        await AutomationExecutionService.Log(executionId, "Executed successfully");
-        await AutomationExecutionService.UpdateExecution(executionId, ExecutionStatus.Success);
+        await AutomateExecutionService.Log(executionId, "Executed successfully");
+        await AutomateExecutionService.UpdateExecution(executionId, ExecutionStatus.Success);
     }
 
     private async Task LogFailure(int executionId, string message)
     {
-        await AutomationExecutionService.Log(executionId, message);
-        await AutomationExecutionService.UpdateExecution(executionId, ExecutionStatus.Failure);
+        await AutomateExecutionService.Log(executionId, message);
+        await AutomateExecutionService.UpdateExecution(executionId, ExecutionStatus.Failure);
     }
 }

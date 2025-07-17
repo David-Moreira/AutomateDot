@@ -1,0 +1,184 @@
+﻿@page "/automates/{id:int}"
+@using AutomateDot.Components.Automate.Triggers
+@using AutomateDot.Components.Automate.Actions
+
+<PageContainer>
+    <TitleContent>
+        @if (Input is not null)
+        {
+            <div class="flex items-center justify-center w-full">
+                <ul class="steps steps-vertical md:steps-horizontal md:w-full ">
+                    <li class=@($"step {(step == 0 ? "step-primary" : "")}")>Definition</li>
+                    <li class=@($"step {(step == 1 ? "step-primary" : "")}")>Trigger</li>
+                    <li class=@($"step {(step == 2 ? "step-primary" : "")}")>Action</li>
+                </ul>
+            </div>
+        }
+        else
+        {
+            <text>Automates</text>
+        }
+    </TitleContent>
+    <ChildContent>
+        @if (Input is null)
+        {
+            <span>Could not find record.</span>
+        }
+        else
+        {
+            @if (step == 0)
+            {
+                <EditForm Model="DefinitionInput" OnValidSubmit="Next" method="post" class="space-y-2">
+                    <ObjectGraphDataAnnotationsValidator />
+
+                    <EditText @bind-Value=@DefinitionInput.Name Caption="Name" />
+                    <EditCheckbox @bind-Value="DefinitionInput.IsActive" Caption="Active"></EditCheckbox>
+
+                    <AlertError Message="@_error" />
+
+                    <div class="float-right">
+                        <input type="button" @onclick="OnCancel" class="btn" value="Cancel" />
+                        <input type="submit" class="btn btn-primary" value="Next" />
+                    </div>
+
+                </EditForm>
+            }
+            else if (step == 1)
+            {
+                <EditForm Model="TriggerInput" OnValidSubmit="Next" method="post" class="space-y-2">
+                    <ObjectGraphDataAnnotationsValidator />
+
+                    <AutomateRecipeTrigger TriggerInput="TriggerInput" />
+
+                    <AlertError Message="@_error" />
+
+                    <div class="float-right">
+                        <input type="button" @onclick="OnCancel" class="btn" value="Cancel" />
+                        <input type="button" class="btn btn-secondary" value="Back" onclick="@Back" />
+                        <input type="submit" class="btn btn-primary" value="Next" />
+                    </div>
+
+                </EditForm>
+            }
+            else if (step == 2)
+            {
+                <EditForm Model="ActionInput" OnValidSubmit="OnValidSubmitAsync" method="post" class="space-y-2">
+                    <ObjectGraphDataAnnotationsValidator />
+
+                    <AutomateRecipeAction ActionInput="ActionInput" TriggerInput="TriggerInput" />
+
+                    <AlertError Message="@_error" />
+
+                    <div class="float-right">
+                        <input type="button" @onclick="OnCancel" class="btn" value="Cancel" />
+                        <input type="button" class="btn btn-secondary" value="Back" onclick="@Back" />
+                        <input type="submit" class="btn btn-primary" value="Update" />
+                    </div>
+
+                </EditForm>
+            }
+        }
+    </ChildContent>
+</PageContainer>
+@code {
+    [Inject] public ILogger<AutomateDetailPage> Logger { get; set; } = default!;
+    [Inject] public AutomateService AutomateService { get; set; } = default!;
+    [Inject] public NavigationManager NavigationManager { get; set; } = default!;
+
+    [Parameter] public int Id { get; set; }
+
+
+    public AutomateRecipe? Input { get; set; }
+    public AutomateRecipeDefinitionDto DefinitionInput { get; set; } = new();
+    public AutomateRecipeTriggerDto TriggerInput { get; set; } = new();
+    public AutomateRecipeActionDto ActionInput { get; set; } = new();
+
+    private int step = 0;
+    private string _error = string.Empty;
+
+    override protected async Task OnInitializedAsync()
+    {
+        try
+        {
+            await base.OnInitializedAsync();
+            Input = await AutomateService.Get(Id);
+
+            if (Input is not null)
+            {
+                DefinitionInput.Name = Input.Name;
+                DefinitionInput.IsActive = Input.IsActive;
+                TriggerInput.SetConfiguration(Input);
+                ActionInput.SetConfiguration(Input);
+            }
+        }
+        finally
+        {
+        }
+    }
+    private Task Back()
+    {
+        if (step <= 0)
+        {
+            return Task.CompletedTask;
+        }
+        step--;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task Next()
+    {
+        if (step >= 2)
+        {
+            return Task.CompletedTask;
+        }
+        step++;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private void OnCancel()
+    {
+        NavigationManager.NavigateTo("/automates");
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        try
+        {
+            _error = string.Empty;
+
+            if (step == 0)
+            {
+                step++;
+                StateHasChanged();
+                return;
+            }
+
+            if (Input is null)
+                return;
+
+            Input.Name = DefinitionInput.Name;
+            Input.IsActive = DefinitionInput.IsActive;
+
+            Input.Trigger = TriggerInput.Trigger ?? throw new ArgumentNullException();
+            Input.TriggerConfiguration = TriggerInput.GetConfiguration();
+
+            Input.Action = ActionInput.Action ?? throw new ArgumentNullException();
+            Input.ActionConfiguration = ActionInput.GetConfiguration();
+
+            await AutomateService.Update(Input);
+
+            NavigationManager.NavigateTo("/automates");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Unhandled exception when saving data");
+            _error = Errors.UNHANDLED_EXCEPTION_NOTIFY_SUPPORT;
+        }
+        finally
+        {
+        }
+    }
+
+}
